@@ -1,8 +1,14 @@
 BASE_URL = "https://raw.githubusercontent.com/frictionlessdata/tableschema-py/master/"
-DESCRIPTOR_MIN = """
-{"fields": [{"name": "id"}, {"name": "height", "type": "integer"}]}
+DESCRIPTOR_MIN = Dict(
+    "fields" => [
+        Dict( "name" => "id" ),
+        Dict( "name" => "height", "type" => "integer" )
+    ]
+)
+DESCRIPTOR_MIN_JSON = """
+{'fields': [{'name': 'id'}, {'name': 'height', 'type': 'integer'}]}
 """
-DESCRIPTOR_MAX = """
+DESCRIPTOR_MAX_JSON = """
 {
     "fields": [
         {"name": "id", "type": "string", "constraints": {"required": True}},
