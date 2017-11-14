@@ -6,12 +6,12 @@ DESCRIPTOR_MIN = Dict(
     ]
 )
 DESCRIPTOR_MIN_JSON = """
-{'fields': [{'name': 'id'}, {'name': 'height', 'type': 'integer'}]}
+{"fields": [{"name": "id"}, {"name": "height", "type": "integer"}]}
 """
 DESCRIPTOR_MAX_JSON = """
 {
     "fields": [
-        {"name": "id", "type": "string", "constraints": {"required": True}},
+        {"name": "id", "type": "string", "constraints": {"required": true}},
         {"name": "height", "type": "number"},
         {"name": "age", "type": "integer"},
         {"name": "name", "type": "string"},
