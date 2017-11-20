@@ -1,13 +1,13 @@
 # Frictionless Data Julia Libraries - Design Document
 
 Oleg Lavrovsky ~ [@loleg](https://github.com/loleg)
-Last updated: *November 2017*
+Last updated: *November 20, 2017*
 
 ## Overview
 
-[Frictionless Data](http://frictionlessdata.io/) is a set of lightweight standards and tooling to make it effortless to get, share, and validate data.
+[Frictionless Data](http://frictionlessdata.io/) is a set of lightweight specifications, libraries and software improving the ways to get, share, and validate data.
 
-This design document focuses on functional specification and design of two code libraries written in [Julia](https://julialang.org/): "Table Schema" and "Data Package".  The design must follow the general specification design principles described at [specs.frictionlessdata.io](https://specs.frictionlessdata.io) and the V1 announcement ([blog.okfn.org](https://blog.okfn.org/2017/09/05/frictionless-data-v1-0/), [hackmd.io](https://hackmd.io/KwUzE5wIwRgWgGYENzDgFmAgzHKA2fJOABmHwGMATEmK8GIoA===)).
+This design document focuses on functional specification and design of two code libraries written in [Julia](https://julialang.org/): "Table Schema" and "Data Package". The design follows the general design principles described at [specs.frictionlessdata.io](https://specs.frictionlessdata.io) and the V1 announcement ([blog.okfn.org](https://blog.okfn.org/2017/09/05/frictionless-data-v1-0/), [hackmd.io](https://hackmd.io/KwUzE5wIwRgWgGYENzDgFmAgzHKA2fJOABmHwGMATEmK8GIoA===)).
 
 ## Functional Specification
 
@@ -37,21 +37,21 @@ Each library needs to implement a set of core “actions” that are further des
 
 ## API Proposal
 
-Package names should be short and named as the base name of its source directory, as per conventions described in the [Julia Manual](https://docs.julialang.org/en/latest/manual/packages/).
+Package names should be short, named as the base name of its source directory, and CamelCase, as per conventions described in Julia's [Manual on Packages](https://docs.julialang.org/en/latest/manual/packages/).
 
-We will have two central modules within the tableschema-jl root: Schema and Table. That will allow us to have constructions like Schema.Read, which are very desirable.
+We will have two central classes within the project: `Schema` and `Table`. These will allow us to have constructions like `Schema.Read`, which are desirable for readability.
 
-The first design proposal will follow the basic usage described [tableschema-py](https://github.com/frictionlessdata/tableschema-py).
+This first design proposal follows the basic usages described in [tableschema-py](https://github.com/frictionlessdata/tableschema-py), [tableschema-js](https://github.com/frictionlessdata/tableschema-js) and [tableschema-go](https://github.com/frictionlessdata/tableschema-go).
 
 The `Schema.load()` function accepts a stream (file I/O), string (JSON) or dictionary (parsed object) representation of a table schema:
 
 ```Julia
-function load(ts::Dict) (*Schema, error)
-function load(ts::String) (*Schema, error)
-function load(ts::IO) (*Schema, error)
+function load(schema::Dict) (*Schema, error)
+function load(filename::String) (*Schema, error)
+function load(stream::IO) (*Schema, error)
 ```
 
-`Field` represents a resources in the schema, such as a cell on a table
+`Field` represents a set of resources in the schema, such as the columns in a table.
 
 ## Usage
 
@@ -80,11 +80,11 @@ println("$i - $r") for (i, r) in filter
 
 ## Implementation
 
-- At least, finish the basic implementation level. Interfaces are described here.
-- Must follow OKI coding standards.
-- Development process is described here.
-- For Style and linting, we are going to use ****. On the linter and static analysis side, we recommend usage of ****.
-- The code will be written and tested in Julia 0.6.1, the latest stable release as per November 2017.
-- For Documentation, we are going to  Julia's standard package documentation and examples, which can be further extracted and generated using *****.
+- At least, finish the basic implementation level. Interfaces are [described here](https://github.com/frictionlessdata/implementations#interface).
+- Must follow OKI [coding standards](https://github.com/okfn/coding-standards).
+- Development process is [described here](https://github.com/frictionlessdata/implementations#development-process).
+- For code [style and linting](https://github.com/okfn/coding-standards#style-and-linting), we are going to use the Julia [Style Guide](https://docs.julialang.org/en/release-0.6/manual/style-guide/), and the [Lint.jl](https://github.com/tonyhffong/Lint.jl) tool for static analysis.
+- The code will be written and tested in [Julia 0.6](https://docs.julialang.org/en/release-0.6/index.html), the latest stable release of which is 0.6.1 as per November 2017.
+- We will use Julia's standard [user manual](https://docs.julialang.org/en/release-0.6/index.html) as documentation, which can be [locally generated](https://github.com/JuliaLang/julia/tree/master/doc)  using [Documenter.jl](https://github.com/JuliaDocs/Documenter.jl).
 - The library documentation must be searchable at https://pkg.julialang.org
-- Unit and integration tests are going to be done using Julia's standard Base.Test
+- Unit and integration tests are going to be done using facilities of the Julia [Standard Library](https://docs.julialang.org/en/release-0.6/stdlib/test/)
