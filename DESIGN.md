@@ -59,13 +59,13 @@ An example sequence which loosely follows the test suite seen in the `test` subf
 
 ```Julia
 filestream = os.open("schema.json")
-schema = Tableschema.read(filestream)
+schema = TableSchema.read(filestream)
 
 err = schema.errors
 # err is falsy, else an error summary
 
 filestream = os.open("data.csv")
-table = Tableschema.read(filestream)
+table = TableSchema.read(filestream)
 err = table.errors
 
 records = [ Dict(
