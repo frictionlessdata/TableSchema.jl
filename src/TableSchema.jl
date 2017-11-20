@@ -1,5 +1,9 @@
 module TableSchema
 
+using JSON
+
+export Schema
+
 DEFAULT_TYPE = "string"
 DEFAULT_FORMAT = "default"
 
@@ -36,20 +40,16 @@ type Schema
     function Schema(fields::Array{Field})
         new(fields, [], [], [])
     end
+
+    function Schema(ts::Dict)
+        fields = [ Field(Descriptor(f)) for f in ts["fields"] ]
+        Schema(fields)
+    end
+
+    function Schema(ts_json::String)
+        dict = JSON.parse(ts_json)
+        Schema(dict)
+    end
 end
-
-
-function load(ts::Dict)
-    fields = [ Field(Descriptor(f)) for f in ts["fields"] ]
-    Schema(fields)
-end
-
-using JSON
-
-function load(ts_json::String)
-    dict = JSON.parse(ts_json)
-    load(dict)
-end
-
 
 end # module
