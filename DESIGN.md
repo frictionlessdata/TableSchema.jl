@@ -62,17 +62,19 @@ using TableSchema
 
 # read Table Schema from a JSON file:
 filestream = os.open("schema.json")
-schema = Schema(filestream)
+schema = Schema.read(filestream)
 
 # err is falsy, or an error summary:
 err = schema.errors
 
-# create Table Schema from a CSV file:
+# read Table Schema from a CSV file:
 filestream = os.open("data.csv")
-table = Table(filestream)
+table = Table.read(filestream)
 
-# as above:
-err = table.errors
+# save the Schema back to a file
+if not table.errors and table.schema.valid
+  table.schema.save("data_schema.json")
+end
 ```
 
 ## Implementation
