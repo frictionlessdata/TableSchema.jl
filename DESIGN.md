@@ -55,27 +55,24 @@ function load(stream::IO) (*Schema, error)
 
 ## Usage
 
-An example sequence which loosely follows the test suite seen in the `test` subfolder:
+For an example usage sequence please see [runtests.jl](test/runtests.jl) in the `test` subfolder. Tables and schema can be loaded as follows:
 
 ```Julia
+using TableSchema
+
+# read Table Schema from a JSON file:
 filestream = os.open("schema.json")
-schema = TableSchema.read(filestream)
+schema = Schema(filestream)
 
+# err is falsy, or an error summary:
 err = schema.errors
-# err is falsy, else an error summary
 
+# create Table Schema from a CSV file:
 filestream = os.open("data.csv")
-table = TableSchema.read(filestream)
+table = Table(filestream)
+
+# as above:
 err = table.errors
-
-records = [ Dict(
-    "name" => "header:name",
-    "age" => "header:age"
-) ]
-filter = table.filter(records)
-err = filter.errors
-
-println("$i - $r") for (i, r) in filter
 ```
 
 ## Implementation
