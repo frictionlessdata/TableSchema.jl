@@ -6,7 +6,9 @@
 [![SemVer](https://img.shields.io/badge/versions-SemVer-brightgreen.svg)](http://semver.org/)
 [![Gitter](https://img.shields.io/gitter/room/frictionlessdata/chat.svg)](https://gitter.im/frictionlessdata/chat)
 
-A library for working with [Table Schema](http://specs.frictionlessdata.io/table-schema/) in Julia.
+A library for working with [Table Schema](http://specs.frictionlessdata.io/table-schema/) in Julia:
+
+> Table Schema is a simple language- and implementation-agnostic way to declare a schema for tabular data. Table Schema is well suited for use cases around handling and validating tabular data in text formats such as CSV, but its utility extends well beyond this core usage, towards a range of applications where data benefits from a portable schema format.
 
 :construction: This package is pre-release and under heavy development. Please see [DESIGN.md](DESIGN.md) and visit the [issues page](https://github.com/frictionlessdata/tableschema-jl/issues) to contribute.
 
