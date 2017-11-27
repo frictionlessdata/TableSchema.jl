@@ -8,7 +8,7 @@ type Descriptor
     _type::String
     _format::String
     _required::Bool
-    # _constraints::Array
+    _constraints::Dict
 
     function Descriptor(dict::Dict)
         _name = dict["name"]
@@ -18,7 +18,7 @@ type Descriptor
             dict["format"] : DEFAULT_FORMAT
         _required = haskey(dict, "required") ?
             dict["required"] : false
-        # _constraints = Array()
-        new(_name, _type, _format, _required) #, _constraints)
+        _constraints = Dict()
+        new(_name, _type, _format, _required, _constraints)
     end
 end

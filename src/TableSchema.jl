@@ -18,13 +18,13 @@ type Schema
     fields::Array{Field}
     primaryKey::Array{String}
     missingValues::Array{String}
-    # foreignKeys::Array{Dict}
+    foreignKeys::Array{Dict}
 
     function Schema(ts::Dict)
         fields = [ Field(Descriptor(f)) for f in ts["fields"] ]
         pk = haskey(ts, "primaryKey") ? ts["primaryKey"] : []
         mv = haskey(ts, "missingValues") ? ts["missingValues"] : []
-        new(fields, pk, mv)
+        new(fields, pk, mv, [])
     end
 
     function Schema(ts_json::String)
