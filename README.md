@@ -22,7 +22,19 @@ A library for working with [Table Schema](http://specs.frictionlessdata.io/table
 
 ## Getting Started
 
+See the *test* folder for test sources and mock data.
+
+From your console, run the unit tests with:
+
+`julia -L src/TableSchema.jl test/runtests.jl`
+
+You should see a test summary displayed.
+
+Alternatively, put `include("src/TableSchema.jl")` in your IDE's console before running `runtests.jl`.
+
 ### Installation
+
+:construction: Work In Progress. The following documentation is relevant only after package release.
 
 The package use semantic versioning, meaning that major versions could include breaking changes. It is highly recommended to specify a version range in your `REQUIRE` file e.g.:
 
@@ -50,10 +62,5 @@ err = schema.errors # handle errors
 filestream = os.open("data.csv")
 table = Table.read(filestream)
 err = table.errors # handle errors
-
 ...
 ```
-
-## Documentation
-
-:construction: Work In Progress.
