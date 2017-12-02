@@ -38,6 +38,7 @@ err = schema.errors # handle errors
 ```Julia
 filestream = os.open("data.csv")
 table = Table(filestream)
+rows = table.read()
 err = table.errors # handle errors
 ...
 ```
@@ -47,10 +48,11 @@ err = table.errors # handle errors
 Add fields to create or expand your schema like this:
 
 ```Julia
+schema = Schema()
 descriptor = Descriptor()
 descriptor._name = "A column"
 descriptor._type = "Integer"
-schema.add_field(descriptor)
+add_field(schema, descriptor)
 ```
 
 ## Installation

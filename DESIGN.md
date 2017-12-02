@@ -72,6 +72,7 @@ err = schema.errors
 # read Table Schema from a CSV file:
 filestream = os.open("data.csv")
 table = Table(filestream)
+rows = table.read()
 
 # save the Schema back to a file
 if not table.errors and table.schema.valid
