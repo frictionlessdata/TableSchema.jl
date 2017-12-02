@@ -19,6 +19,14 @@ type Descriptor
         _required = haskey(dict, "required") ?
             dict["required"] : false
         _constraints = Dict()
+        if haskey(dict, "constraints")
+            _constraints["required"] = haskey(dict["constraints"], "required") ?
+                dict["constraints"]["required"] : false
+        end
         new(_name, _type, _format, _required, _constraints)
+    end
+
+    function Descriptor()
+        new("", "", "", false, Dict())
     end
 end

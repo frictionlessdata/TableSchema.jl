@@ -11,7 +11,7 @@ This design document focuses on functional specification and design of two code 
 
 ## Functional Specification
 
-Each library needs to implement a set of core “actions” that are further described in the implementation documentation. For simplicity, these core actions are reproduced here:
+Each library needs to implement a set of core “actions” that are further described in the implementation [documentation](https://github.com/frictionlessdata/implementations#tableschema). For simplicity, these core actions are reproduced here:
 
 **Table Schema**
 
@@ -39,17 +39,19 @@ Each library needs to implement a set of core “actions” that are further des
 
 Package names should be short, named as the base name of its source directory, and CamelCase, as per conventions described in Julia's [Manual on Packages](https://docs.julialang.org/en/latest/manual/packages/).
 
-We will have two central classes within the project: `Schema` and `Table`. These will allow us to have constructions like `Schema.Read`, which are desirable for readability.
+We will have two central classes within the project: `Schema` and `Table`. These will allow us to have constructions like `Schema.infer()`, which are desirable for readability.
 
 This first design proposal follows the basic usages described in [tableschema-py](https://github.com/frictionlessdata/tableschema-py), [tableschema-js](https://github.com/frictionlessdata/tableschema-js) and [tableschema-go](https://github.com/frictionlessdata/tableschema-go).
 
-The `Schema.load()` function accepts a stream (file I/O), string (JSON) or dictionary (parsed object) representation of a table schema:
+The `Schema()` type constructor accepts a stream (file I/O), string (JSON) or dictionary (parsed object) representation of a table schema:
 
 ```Julia
-function load(schema::Dict) (*Schema, error)
-function load(filename::String) (*Schema, error)
-function load(stream::IO) (*Schema, error)
+function Schema(dictionary::Dict) (*Schema, error)
+function Schema(filename::String) (*Schema, error)
+function Schema(stream::IO) (*Schema, error)
 ```
+
+`Table` represents a table that is an instance of the schema, and is validated by it.
 
 `Field` represents a set of resources in the schema, such as the columns in a table.
 
@@ -62,14 +64,14 @@ using TableSchema
 
 # read Table Schema from a JSON file:
 filestream = os.open("schema.json")
-schema = Schema.read(filestream)
+schema = Schema(filestream)
 
 # err is falsy, or an error summary:
 err = schema.errors
 
 # read Table Schema from a CSV file:
 filestream = os.open("data.csv")
-table = Table.read(filestream)
+table = Table(filestream)
 
 # save the Schema back to a file
 if not table.errors and table.schema.valid

@@ -20,19 +20,40 @@ A library for working with [Table Schema](http://specs.frictionlessdata.io/table
 - `validate` function for validating schema descriptors
 - `infer` function that creates a schema based on a data sample
 
-## Getting Started
 
-See the *test* folder for test sources and mock data.
+# Usage
 
-From your console, run the unit tests with:
+## Schema
 
-`julia -L src/TableSchema.jl test/runtests.jl`
+```Julia
+using TableSchema
 
-You should see a test summary displayed.
+filestream = os.open("schema.json")
+schema = Schema(filestream)
+err = schema.errors # handle errors
+```
 
-Alternatively, put `include("src/TableSchema.jl")` in your IDE's console before running `runtests.jl`.
+## Table
 
-### Installation
+```Julia
+filestream = os.open("data.csv")
+table = Table(filestream)
+err = table.errors # handle errors
+...
+```
+
+## Field
+
+Add fields to create or expand your schema like this:
+
+```Julia
+descriptor = Descriptor()
+descriptor._name = "A column"
+descriptor._type = "Integer"
+schema.add_field(descriptor)
+```
+
+## Installation
 
 :construction: Work In Progress. The following documentation is relevant only after package release.
 
@@ -48,19 +69,16 @@ At the Julia REPL, install the package as usual with:
 Pkg.add("TableSchema")
 ```
 
-### Examples
+Code examples here require Julia 0.6+.
 
-Code examples here require Julia 0.6+.:
+## Development
 
-```Julia
-using TableSchema
+Clone this repository, then see the *test* folder for test sources and mock data.
 
-filestream = os.open("schema.json")
-schema = Schema.read(filestream)
-err = schema.errors # handle errors
+From your console, you can run the unit tests with:
 
-filestream = os.open("data.csv")
-table = Table.read(filestream)
-err = table.errors # handle errors
-...
-```
+`julia -L src/TableSchema.jl test/runtests.jl`
+
+You should see a test summary displayed.
+
+Alternatively, put `include("src/TableSchema.jl")` in your IDE's console before running `runtests.jl`.

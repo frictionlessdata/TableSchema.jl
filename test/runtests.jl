@@ -31,10 +31,22 @@ include("data.jl")
 end
 
 @testset "Validating a Schema" begin
-    @testset "Load constraints and foreign keys" begin
+    @testset "Create a schema from scratch" begin
+        s = Schema()
+        d = TableSchema.Descriptor()
+        d._name = "width"
+        d._type = "integer"
+        add_field(s, d)
+        @test length(s.fields) == 1
+    end
+    @testset "Check any constraints" begin
         s = Schema(DESCRIPTOR_MAX_JSON)
         d1 = s.fields[1].descriptor
         @test haskey(d1._constraints, "required")
-        @test length(s.foreignKeys) == 1
     end
+    # @testset "Check foreign keys" begin
+    #     s = Schema(DESCRIPTOR_MAX_JSON)
+    #     d1 = s.fields[1].descriptor
+    #     @test length(s.foreignKeys) == 1
+    # end
 end

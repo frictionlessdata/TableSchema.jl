@@ -4,7 +4,8 @@ https://github.com/frictionlessdata/tableschema-jl
 """
 module TableSchema
 
-export Schema
+export Schema, Field, Descriptor
+export add_field
 
 using JSON
 

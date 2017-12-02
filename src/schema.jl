@@ -3,7 +3,7 @@ Table Schema main type
 https://github.com/frictionlessdata/tableschema-jl#schema
 """
 
-type Schema
+mutable struct Schema
     fields::Array{Field}
     primaryKey::Array{String}
     missingValues::Array{String}
@@ -20,4 +20,12 @@ type Schema
         dict = JSON.parse(ts_json)
         Schema(dict)
     end
+
+    function Schema()
+        new([], [], [], [])
+    end
+end
+
+function add_field(s::Schema, d::Descriptor)
+    push!(s.fields, Field(d))
 end
