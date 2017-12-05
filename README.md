@@ -23,6 +23,23 @@ A library for working with [Table Schema](http://specs.frictionlessdata.io/table
 
 # Usage
 
+## Table
+
+```Julia
+filestream = os.open("cities.csv")
+table = Table(filestream)
+table.headers # ['city', 'location']
+table.read(keyed=True)
+# [
+#   {city: 'london', location: '51.50,-0.11'},
+#   {city: 'paris', location: '48.85,2.30'},
+#   {city: 'rome', location: 'N/A'},
+# ]
+rows = table.read()
+err = table.errors # handle errors
+...
+```
+
 ## Schema
 
 ```Julia
@@ -31,16 +48,6 @@ using TableSchema
 filestream = os.open("schema.json")
 schema = Schema(filestream)
 err = schema.errors # handle errors
-```
-
-## Table
-
-```Julia
-filestream = os.open("data.csv")
-table = Table(filestream)
-rows = table.read()
-err = table.errors # handle errors
-...
 ```
 
 ## Field

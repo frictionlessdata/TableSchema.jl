@@ -26,6 +26,4 @@ mutable struct Schema
     end
 end
 
-function add_field(s::Schema, d::Descriptor)
-    push!(s.fields, Field(d))
-end
+add_field(s::Schema, f::Field) = push!(s.fields, f)

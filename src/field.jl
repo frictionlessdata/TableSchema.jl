@@ -17,4 +17,11 @@ type Field
     # cast_value = NullException()
     # test_value = NullException()
 
+    function Field(d::Descriptor)
+        new(d)
+    end
+    
+    function Field()
+        new(Descriptor())
+    end
 end

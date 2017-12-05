@@ -32,11 +32,11 @@ end
 
 @testset "Validating a Schema" begin
     @testset "Create a schema from scratch" begin
+        f = Field()
+        f.descriptor._name = "width"
+        f.descriptor._type = "integer"
         s = Schema()
-        d = TableSchema.Descriptor()
-        d._name = "width"
-        d._type = "integer"
-        add_field(s, d)
+        TableSchema.add_field(s, f)
         @test length(s.fields) == 1
     end
     @testset "Check any constraints" begin
@@ -49,4 +49,17 @@ end
     #     d1 = s.fields[1].descriptor
     #     @test length(s.foreignKeys) == 1
     # end
+end
+
+@testset "Loading a Table" begin
+    @testset "Import from a CSV" begin
+        # t = Table(IOBuffer(TABLE_MIN_DATA_CSV))
+        t = Table(TABLE_MIN_CSV_FILE)
+        @test length(t.headers) == 5
+    end
+    @testset "Validate with schema" begin
+        s = Schema(DESCRIPTOR_MAX_JSON)
+        t = Table(TABLE_MIN_CSV_FILE, s)
+        # @test TableSchema.validate(t)
+    end
 end
