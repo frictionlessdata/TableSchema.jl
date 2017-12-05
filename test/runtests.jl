@@ -49,17 +49,27 @@ end
     #     d1 = s.fields[1].descriptor
     #     @test length(s.foreignKeys) == 1
     # end
+    # @testset "Handle errors" begin
+    #     s = Schema(BAD_SCHEMA)
+    #     err = s.errors
+    #     ...
+    # end
 end
 
 @testset "Loading a Table" begin
-    @testset "Import from a CSV" begin
-        # t = Table(IOBuffer(TABLE_MIN_DATA_CSV))
+    @testset "Import from a simple CSV" begin
         t = Table(TABLE_MIN_CSV_FILE)
         @test length(t.headers) == 5
+        @test_throws ErrorException TableSchema.validate(t)
     end
     @testset "Validate with schema" begin
         s = Schema(DESCRIPTOR_MAX_JSON)
         t = Table(TABLE_MIN_CSV_FILE, s)
-        # @test TableSchema.validate(t)
+        @test_throws ErrorException TableSchema.validate(t)
     end
+    # @testset "Handle errors" begin
+    #     t = Table(TABLE_BAD_CSV_FILE)
+    #     err = t.errors
+    #     ...
+    # end
 end

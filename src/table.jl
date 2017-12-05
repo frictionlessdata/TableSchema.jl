@@ -24,5 +24,6 @@ mutable struct Table
 end
 
 function validate(t::Table)
+    !isempty(t.schema) || throw(ErrorException("No schema available for table"))
     throw(ErrorException("Not implemented"))
 end

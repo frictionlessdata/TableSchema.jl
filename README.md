@@ -28,14 +28,20 @@ A library for working with [Table Schema](http://specs.frictionlessdata.io/table
 ```Julia
 filestream = os.open("cities.csv")
 table = Table(filestream)
-table.headers # ['city', 'location']
+table.headers
+# ['city', 'location']
 table.read(keyed=True)
 # [
 #   {city: 'london', location: '51.50,-0.11'},
 #   {city: 'paris', location: '48.85,2.30'},
 #   {city: 'rome', location: 'N/A'},
 # ]
-rows = table.read()
+rows = table.source
+# 6×5 Array{Any,2}:
+#   "id"    "height"   "age"  "name"     "occupation"         
+#  1      10.0        1       "string1"  "2012-06-15 00:00:00"
+#  2      10.1        2       "string2"  "2013-06-15 01:00:00"
+# ...
 err = table.errors # handle errors
 ...
 ```
@@ -47,6 +53,8 @@ using TableSchema
 
 filestream = os.open("schema.json")
 schema = Schema(filestream)
+schema.fields
+# <Field1, Field2...>
 err = schema.errors # handle errors
 ```
 
@@ -56,10 +64,10 @@ Add fields to create or expand your schema like this:
 
 ```Julia
 schema = Schema()
-descriptor = Descriptor()
-descriptor._name = "A column"
-descriptor._type = "Integer"
-add_field(schema, descriptor)
+field = Field()
+field.descriptor._name = "A column"
+field.descriptor._type = "Integer"
+add_field(schema, field)
 ```
 
 ## Installation
