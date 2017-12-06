@@ -12,7 +12,7 @@ include("data.jl")
         @test d1._type == "string"
         d2 = s.fields[2].descriptor
         @test d2._type == "integer"
-        @test d2._required == false
+        @test !d2.constraints.required
     end
     @testset "Parsed from a JSON string" begin
         s = Schema(DESCRIPTOR_MIN_JSON)
@@ -20,13 +20,15 @@ include("data.jl")
         d1 = s.fields[1].descriptor
         @test d1._name == "id"
         d2 = s.fields[2].descriptor
-        @test d2._required == false
+        @test !d2.constraints.required
     end
     @testset "Full descriptor from JSON" begin
         s = Schema(DESCRIPTOR_MAX_JSON)
         @test length(s.fields) == 5
         @test length(s.primaryKey) == 1
         @test length(s.missingValues) == 3
+        d1 = s.fields[1].descriptor
+        @test d1.constraints.required
     end
 end
 
@@ -42,7 +44,8 @@ end
     @testset "Check any constraints" begin
         s = Schema(DESCRIPTOR_MAX_JSON)
         d1 = s.fields[1].descriptor
-        @test haskey(d1._constraints, "required")
+        @test d1.constraints.required
+        @test !d1.constraints.unique
     end
     # @testset "Check foreign keys" begin
     #     s = Schema(DESCRIPTOR_MAX_JSON)
@@ -60,11 +63,13 @@ end
     @testset "Import from a simple CSV" begin
         t = Table(TABLE_MIN_CSV_FILE)
         @test length(t.headers) == 5
-        @test_throws ErrorException TableSchema.validate(t)
+        # No schema, hence exception:
+        @test_throws TableValidationException TableSchema.validate(t)
     end
     @testset "Validate with schema" begin
         s = Schema(DESCRIPTOR_MAX_JSON)
         t = Table(TABLE_MIN_CSV_FILE, s)
+        # TODO: implement
         @test_throws ErrorException TableSchema.validate(t)
     end
     # @testset "Handle errors" begin

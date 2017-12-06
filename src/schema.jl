@@ -24,6 +24,11 @@ mutable struct Schema
     function Schema()
         new([], [], [], [])
     end
+
+    read(ts::Dict) = Schema(ts)
+    read(ts_json::String) = Schema(ts_json)
 end
+
+isempty(s::Schema) = Base.isempty(s.fields)
 
 add_field(s::Schema, f::Field) = push!(s.fields, f)

@@ -4,7 +4,7 @@ https://github.com/frictionlessdata/tableschema-jl
 """
 module TableSchema
 
-export Table
+export Table, TableValidationException
 export Schema
 export Field
 # export validate

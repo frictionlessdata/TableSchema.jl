@@ -21,9 +21,16 @@ mutable struct Table
         schema = Schema()
         Table(csv_blob, schema)
     end
+
+    read(csv_blob::String) = Table(csv_blob::String)
+end
+
+type TableValidationException <: Exception
+    var::String
 end
 
 function validate(t::Table)
-    !isempty(t.schema) || throw(ErrorException("No schema available for table"))
+    isempty(t.schema) &&
+        throw(TableValidationException("No schema available"))
     throw(ErrorException("Not implemented"))
 end
