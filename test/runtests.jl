@@ -25,8 +25,8 @@ include("data.jl")
     @testset "Full descriptor from JSON" begin
         s = Schema(DESCRIPTOR_MAX_JSON)
         @test length(s.fields) == 5
-        @test length(s.primaryKey) == 1
-        @test length(s.missingValues) == 3
+        @test length(s.primary_key) == 1
+        @test length(s.missing_values) == 3
         d1 = s.fields[1].descriptor
         @test d1.constraints.required
     end

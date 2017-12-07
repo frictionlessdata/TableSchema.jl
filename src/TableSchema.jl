@@ -11,6 +11,10 @@ export Field
 # export infer
 # export errors
 
+
+using Base.Iterators: filter
+using Base.Iterators: Repeated, repeated
+
 using JSON
 # using CSV
 

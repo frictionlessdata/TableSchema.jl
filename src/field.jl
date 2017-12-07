@@ -6,7 +6,15 @@ https://github.com/frictionlessdata/tableschema-jl#field
 type Field
     descriptor::Descriptor
 
-    # name = descriptor._name
+    function Field(d::Descriptor)
+        new(d)
+    end
+
+    function Field()
+        new(Descriptor())
+    end
+
+    name() = descriptor._name
     # get_type = descriptor._type
     # format = descriptor._format
     #
@@ -16,12 +24,4 @@ type Field
     #
     # cast_value = NullException()
     # test_value = NullException()
-
-    function Field(d::Descriptor)
-        new(d)
-    end
-    
-    function Field()
-        new(Descriptor())
-    end
 end
