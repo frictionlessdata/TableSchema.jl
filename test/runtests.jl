@@ -60,21 +60,30 @@ end
 end
 
 @testset "Loading a Table" begin
-    @testset "Import from a simple CSV" begin
+    @testset "Read a simple CSV" begin
         t = Table(TABLE_MIN_CSV_FILE)
+        # check the headers
         @test length(t.headers) == 5
-        # No schema, hence exception:
+        @test t.headers[2] == "height"
+        # check the number of rows
+        @test length(TableSchema.read(t)[:,1]) == 5
+        # check the bottom left index
+        @test TableSchema.read(t)[5,1] == 5
+        # no schema, hence exception
         @test_throws TableValidationException TableSchema.validate(t)
     end
-    @testset "Validate with schema" begin
-        s = Schema(DESCRIPTOR_MAX_JSON)
-        t = Table(TABLE_MIN_CSV_FILE, s)
-        # TODO: implement
-        @test_throws ErrorException TableSchema.validate(t)
+    @testset "Infer the Schema" begin
     end
-    # @testset "Handle errors" begin
-    #     t = Table(TABLE_BAD_CSV_FILE)
-    #     err = t.errors
-    #     ...
-    # end
+    @testset "Save the Table" begin
+    end
+    @testset "Validate with Schema" begin
+        # s = Schema(DESCRIPTOR_MAX_JSON)
+        # t = Table(TABLE_MIN_CSV_FILE, s)
+        # TableSchema.validate(t)
+    end
+    @testset "Handle errors" begin
+        # t = Table(TABLE_BAD_CSV_FILE)
+        # err = t.errors
+        # ...
+    end
 end
