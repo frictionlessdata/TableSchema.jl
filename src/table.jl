@@ -8,14 +8,24 @@ mutable struct Table
     headers::Array{String}
     schema::Schema
 
-    function Table(csvfilename::String, schema::Schema)
-        schema = schema
-        source = readcsv(csvfilename)
+    function get_headers(source)
         headers = [ String(s) for s in source[1,:] ]
         source = source[2:end,:] # clear the headers
+        headers, source
+    end
+    function Table(csvfilename::String, schema::Schema=Schema())
+        source = readcsv(csvfilename)
+        headers, source = get_headers(source)
         new(source, headers, schema)
     end
-    Table(csvfilename::String) = Table(csvfilename, Schema())
+    function Table(csvdata::Base.AbstractIOBuffer, schema::Schema=Schema())
+        source = readcsv(csvdata)
+        headers, source = get_headers(source)
+        new(source, headers, schema)
+    end
+    function Table(source, headers::Array{String}, schema::Schema=Schema())
+        new(source, headers, schema)
+    end
 end
 
 function read(t::Table, keyed=false, extended=false, cast=true, relations=false, limit=nothing)

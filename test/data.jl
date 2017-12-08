@@ -23,7 +23,7 @@ DESCRIPTOR_MAX_JSON = """
 }
 """
 
-TABLE_MIN_CSV_FILE = "test/files/table-min.csv"
+TABLE_MIN_FILE_CSV = "test/files/table-min.csv"
 
 TABLE_MIN_DATA_CSV = """id,height,age,name,occupation
 1,10.0,1,string1,2012-06-15 00:00:00

@@ -3,6 +3,47 @@ using Base.Test
 
 include("data.jl")
 
+@testset "Loading a Table" begin
+    @testset "Read data from a file" begin
+        t = Table(TABLE_MIN_FILE_CSV)
+        # check the headers
+        @test length(t.headers) == 5
+        @test t.headers[2] == "height"
+        # check the number of rows
+        @test length(TableSchema.read(t)[:,1]) == 5
+        # check the bottom left index
+        @test TableSchema.read(t)[5,1] == 5
+        # no schema, hence exception
+        @test_throws TableValidationException TableSchema.validate(t)
+    end
+    @testset "Read data from memory" begin
+        t = Table(IOBuffer(TABLE_MIN_DATA_CSV))
+        # check the headers
+        @test length(t.headers) == 5
+        @test t.headers[2] == "height"
+        # check the number of rows
+        @test length(TableSchema.read(t)[:,1]) == 5
+        # check the bottom left index
+        @test TableSchema.read(t)[5,1] == 5
+        # no schema, hence exception
+        @test_throws TableValidationException TableSchema.validate(t)
+    end
+    @testset "Infer the Schema" begin
+    end
+    @testset "Save the Table" begin
+    end
+    @testset "Validate with Schema" begin
+        # s = Schema(DESCRIPTOR_MAX_JSON)
+        # t = Table(TABLE_MIN_CSV_FILE, s)
+        # TableSchema.validate(t)
+    end
+    @testset "Handle errors" begin
+        # t = Table(TABLE_BAD_CSV_FILE)
+        # err = t.errors
+        # ...
+    end
+end
+
 @testset "Loading a Schema" begin
     @testset "Minimal from dictionary" begin
         s = Schema(DESCRIPTOR_MIN)
@@ -57,33 +98,4 @@ end
     #     err = s.errors
     #     ...
     # end
-end
-
-@testset "Loading a Table" begin
-    @testset "Read a simple CSV" begin
-        t = Table(TABLE_MIN_CSV_FILE)
-        # check the headers
-        @test length(t.headers) == 5
-        @test t.headers[2] == "height"
-        # check the number of rows
-        @test length(TableSchema.read(t)[:,1]) == 5
-        # check the bottom left index
-        @test TableSchema.read(t)[5,1] == 5
-        # no schema, hence exception
-        @test_throws TableValidationException TableSchema.validate(t)
-    end
-    @testset "Infer the Schema" begin
-    end
-    @testset "Save the Table" begin
-    end
-    @testset "Validate with Schema" begin
-        # s = Schema(DESCRIPTOR_MAX_JSON)
-        # t = Table(TABLE_MIN_CSV_FILE, s)
-        # TableSchema.validate(t)
-    end
-    @testset "Handle errors" begin
-        # t = Table(TABLE_BAD_CSV_FILE)
-        # err = t.errors
-        # ...
-    end
 end
