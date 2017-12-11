@@ -47,8 +47,8 @@ mutable struct Field
         new(dict, name, of_type, format, reqd, cons)
     end
 
-    function Field()
-        new(Dict())
+    function Field(name::String)
+        new(Dict( "name" => name ))
     end
 end
 

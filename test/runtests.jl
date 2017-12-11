@@ -76,8 +76,7 @@ end
 
 @testset "Validating a Schema" begin
     @testset "Create a schema from scratch" begin
-        f = Field()
-        f.name = "width"
+        f = Field("width")
         f.of_type = "integer"
         s = Schema()
         TableSchema.add_field(s, f)
