@@ -10,7 +10,7 @@ export Field
 # export validate
 # export infer
 # export errors
-
+export required
 
 using Base.Iterators: filter
 using Base.Iterators: Repeated, repeated
@@ -21,7 +21,6 @@ using JSON
 DEFAULT_TYPE = "string"
 DEFAULT_FORMAT = "default"
 
-include("descriptor.jl")
 include("field.jl")
 include("schema.jl")
 include("table.jl")

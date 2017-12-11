@@ -48,49 +48,46 @@ end
     @testset "Minimal from dictionary" begin
         s = Schema(DESCRIPTOR_MIN)
         @test length(s.fields) == 2
-        d1 = s.fields[1].descriptor
-        @test d1._name == "id"
-        @test d1._type == "string"
-        d2 = s.fields[2].descriptor
-        @test d2._type == "integer"
-        @test !d2.constraints.required
+        f1 = s.fields[1]
+        @test f1.name == "id"
+        @test f1.of_type == "string"
+        f2 = s.fields[2]
+        @test f2.of_type == "integer"
+        @test !required(f2)
     end
     @testset "Parsed from a JSON string" begin
         s = Schema(DESCRIPTOR_MIN_JSON)
         @test length(s.fields) == 2
-        d1 = s.fields[1].descriptor
-        @test d1._name == "id"
-        d2 = s.fields[2].descriptor
-        @test !d2.constraints.required
+        @test s.fields[1].name == "id"
+        @test !required(s.fields[2])
     end
     @testset "Full descriptor from JSON" begin
         s = Schema(DESCRIPTOR_MAX_JSON)
         @test length(s.fields) == 5
         @test length(s.primary_key) == 1
         @test length(s.missing_values) == 3
-        d1 = s.fields[1].descriptor
-        @test d1.constraints.required
+        @test required(s.fields[1])
     end
 end
 
 @testset "Validating a Schema" begin
     @testset "Create a schema from scratch" begin
         f = Field()
-        f.descriptor._name = "width"
-        f.descriptor._type = "integer"
+        f.name = "width"
+        f.of_type = "integer"
         s = Schema()
         TableSchema.add_field(s, f)
         @test length(s.fields) == 1
     end
     @testset "Check any constraints" begin
         s = Schema(DESCRIPTOR_MAX_JSON)
-        d1 = s.fields[1].descriptor
+        d1 = s.fields[1]
         @test d1.constraints.required
         @test !d1.constraints.unique
     end
     # @testset "Check foreign keys" begin
     #     s = Schema(DESCRIPTOR_MAX_JSON)
-    #     d1 = s.fields[1].descriptor
+    #     d1 = s.fields[1]
     #     @test length(s.foreignKeys) == 1
     # end
     # @testset "Handle errors" begin

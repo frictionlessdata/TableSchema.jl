@@ -3,7 +3,14 @@ Table Schema main type
 https://github.com/frictionlessdata/tableschema-jl#schema
 """
 
+type SchemaError
+    message::String
+    key::String
+    line::Int16
+end
+
 mutable struct Schema
+    errors::Array{SchemaError}
     descriptor::Dict
     primary_key::Array{String}
     foreign_keys::Array{Dict}
@@ -11,12 +18,14 @@ mutable struct Schema
     fields::Array{Field}
 
     function Schema(d::Dict, strict::Bool=false)
-        strict && throw(ErrorException("Not implemented"))
-        fields = [ Field(Descriptor(f)) for f in d["fields"] ]
+        strict && throw(ErrorException("Not implemented")) # TODO
+        fls = haskey(d, "fields") ?
+            [ Field(f) for f in d["fields"] ] : []
         pk = haskey(d, "primaryKey") ? d["primaryKey"] : []
-        fks = []
         mvs = haskey(d, "missingValues") ? d["missingValues"] : []
-        new(d, pk, fks, mvs, fields)
+        fks = [] # TODO
+        err = []
+        new(err, d, pk, fks, mvs, fls)
     end
 
     function Schema(ts_json::String)
@@ -25,7 +34,7 @@ mutable struct Schema
     end
 
     function Schema()
-        new(Dict(), [], [], [], [])
+        Schema(Dict())
     end
 end
 
@@ -33,7 +42,7 @@ valid(s::Schema) = throw(ErrorException("Not implemented"))
 errors(s::Schema) = throw(ErrorException("Not implemented"))
 field_names(s::Schema) = [ f.descriptor.name for f in s.fields ]
 get_field(s::Schema, name::String) = [ f for f in s.fields if f.name == name ][1] || throw(ErrorException("Not found"))
-add_field(s::Schema, d::Dict) = push!(s.fields, Field(Descriptor(d)))
+add_field(s::Schema, d::Dict) = push!(s.fields, Field(d))
 add_field(s::Schema, f::Field) = push!(s.fields, f)
 remove_field(s::Schema, name::String) = pop!(s.fields, get_field(s, name))
 cast_row(s::Schema, row::Array{Any}) = throw(ErrorException("Not implemented"))
