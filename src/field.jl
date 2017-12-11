@@ -31,6 +31,7 @@ mutable struct Field
     name::String
     of_type::String
     format::String
+    required::Bool
     constraints::Constraints
 
     function Field(dict::Dict)
@@ -40,9 +41,10 @@ mutable struct Field
             dict["type"] : DEFAULT_TYPE
         format = haskey(dict, "format") ?
             dict["format"] : DEFAULT_FORMAT
-        cnstrs = haskey(dict, "constraints") ?
+        cons = haskey(dict, "constraints") ?
             Constraints(dict["constraints"]) : Constraints()
-        new(dict, name, of_type, format, cnstrs)
+        reqd = cons.required
+        new(dict, name, of_type, format, reqd, cons)
     end
 
     function Field()
@@ -50,6 +52,5 @@ mutable struct Field
     end
 end
 
-required(f::Field) = f.constraints.required
 # cast_value = NullException()
 # test_value = NullException()

@@ -53,20 +53,20 @@ end
         @test f1.of_type == "string"
         f2 = s.fields[2]
         @test f2.of_type == "integer"
-        @test !required(f2)
+        @test !f2.required
     end
     @testset "Parsed from a JSON string" begin
         s = Schema(DESCRIPTOR_MIN_JSON)
         @test length(s.fields) == 2
         @test s.fields[1].name == "id"
-        @test !required(s.fields[2])
+        @test !s.fields[2].required
     end
     @testset "Full descriptor from JSON" begin
         s = Schema(DESCRIPTOR_MAX_JSON)
         @test length(s.fields) == 5
         @test length(s.primary_key) == 1
         @test length(s.missing_values) == 3
-        @test required(s.fields[1])
+        @test s.fields[1].required
     end
 end
 

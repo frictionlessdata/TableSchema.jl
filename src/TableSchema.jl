@@ -4,13 +4,13 @@ https://github.com/frictionlessdata/tableschema-jl
 """
 module TableSchema
 
-export Table, TableValidationException
+export Table
 export Schema
 export Field
 # export validate
 # export infer
-# export errors
-export required
+
+export TableValidationException
 
 using Base.Iterators: filter
 using Base.Iterators: Repeated, repeated
