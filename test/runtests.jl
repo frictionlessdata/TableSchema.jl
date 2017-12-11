@@ -13,6 +13,8 @@ include("data.jl")
         @test length(TableSchema.read(t)[:,1]) == 5
         # check the bottom left index
         @test TableSchema.read(t)[5,1] == 5
+        # iterate over the rows
+        @test sum([ row[2] for row in t ]) == 51
         # no schema, hence exception
         @test_throws TableValidationException TableSchema.validate(t)
     end
@@ -25,6 +27,8 @@ include("data.jl")
         @test length(TableSchema.read(t)[:,1]) == 5
         # check the bottom left index
         @test TableSchema.read(t)[5,1] == 5
+        # iterate over the rows
+        @test sum([ row[2] for row in t ]) == 51
         # no schema, hence exception
         @test_throws TableValidationException TableSchema.validate(t)
     end

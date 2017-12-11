@@ -48,6 +48,7 @@ function validate(t::Table)
     throw(ErrorException("Not implemented"))
 end
 
+Base.length(t::Table) = size(t.source, 1)
 Base.start(t::Table) = 1
-Base.done(t::Table, i) = i > length(t.source)
+Base.done(t::Table, i) = i > size(t.source, 1)
 Base.next(t::Table, i) = t.source[i,:], i+1
