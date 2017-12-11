@@ -78,15 +78,17 @@ end
     @testset "Create a schema from scratch" begin
         f = Field("width")
         f.of_type = "integer"
+        f.required = true
         s = Schema()
         TableSchema.add_field(s, f)
         @test length(s.fields) == 1
+        @test s.fields[1].required
     end
     @testset "Check any constraints" begin
         s = Schema(DESCRIPTOR_MAX_JSON)
-        d1 = s.fields[1]
-        @test d1.constraints.required
-        @test !d1.constraints.unique
+        c1 = s.fields[1].constraints
+        @test c1.required
+        @test !c1.unique
     end
     # @testset "Check foreign keys" begin
     #     s = Schema(DESCRIPTOR_MAX_JSON)
