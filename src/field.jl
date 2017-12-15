@@ -3,29 +3,6 @@ Table Schema field
 https://github.com/frictionlessdata/tableschema-jl#field
 """
 
-type Constraints
-    required::Bool
-    unique::Bool
-    # minLength:Integer
-    # maxLength:Ineger
-    # minimum
-    # maximum
-    # pattern
-    # enum
-
-    function Constraints(dict::Dict)
-        required = haskey(dict, "required") ?
-            dict["required"] : false
-        unique = haskey(dict, "unique") ?
-            dict["unique"] : false
-        new(required, unique)
-    end
-
-    function Constraints()
-        new(false, false)
-    end
-end
-
 mutable struct Field
     descriptor::Dict
     name::String
