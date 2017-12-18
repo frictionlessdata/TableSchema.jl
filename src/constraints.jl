@@ -41,11 +41,6 @@ type ConstraintException <: Exception
     name::String
     value
     expected
-
-    # message =
-    #     'Field "{field.name}" has constraint "{name}" '
-    #     'which is not satisfied for value "{value}"'
-    #     ).format(field=self, name=name, value=value))
 end
 
 function checkrow(c::Constraints, val, column::Array=[])

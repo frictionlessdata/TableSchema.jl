@@ -45,7 +45,26 @@ end
 function validate(t::Table)
     is_empty(t.schema) &&
         throw(TableValidationException("No schema available"))
-    throw(ErrorException("Not implemented"))
+    # !valid(t.schema) &&
+    #     throw(TableValidationException("Schema not valid"))
+    tr = TableSchema.read(t)
+    for row = 1:size(tr, 2)
+        println(row)
+        for fld in t.schema.fields
+            ix = findin(t.headers, [fld.name])
+            println(fld.name)
+            if length(ix) == 1
+                println(ix)
+                checkrow(fld, row[ix[1]])
+            else
+                throw(TableValidationException(fld.name))
+            end
+        end
+    end
+        # message =
+        #     'Field "{field.name}" has constraint "{name}" '
+        #     'which is not satisfied for value "{value}"'
+        #     ).format(field=self, name=name, value=value))
 end
 
 Base.length(t::Table) = size(t.source, 1)

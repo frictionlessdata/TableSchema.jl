@@ -11,6 +11,7 @@ export Field
 # export infer
 
 export TableValidationException
+export ConstraintException
 
 using Base.Iterators: filter
 using Base.Iterators: Repeated, repeated

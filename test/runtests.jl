@@ -76,7 +76,7 @@ end
         # check the number of rows
         @test length(tr[:,1]) == 5
         # check the bottom left index
-        @test tr(t)[5,1] == 5
+        @test tr[5,1] == 5
         # iterate over the rows
         @test sum([ row[2] for row in t ]) == 51
         # no schema, hence exception
@@ -91,17 +91,18 @@ end
 @testset "Validating Table schema" begin
     @testset "Check constraints" begin
         s = Schema(DESCRIPTOR_MAX_JSON)
-        c1 = s.fields[1].constraints
-        @test c1.required
-        @test !(c1.unique)
+        @test s.fields[1].constraints.required
         t = Table(IOBuffer(TABLE_MIN_DATA_CSV))
         tr = TableSchema.read(t)
         @test TableSchema.checkrow(s.fields[1], tr[1,1])
         @test TableSchema.checkrow(s.fields[2], tr[2,2])
         @test TableSchema.checkrow(s.fields[3], tr[3,3])
+        @test_throws ConstraintException TableSchema.checkrow(s.fields[1], "")
     end
     @testset "Handle errors" begin
-        # t = Table(TABLE_BAD_CSV_FILE)
+        s = Schema(DESCRIPTOR_MAX_JSON)
+        t = Table(IOBuffer(TABLE_BAD_DATA_CSV), s)
+        TableSchema.validate(t)
         # err = t.errors
         # ...
     end

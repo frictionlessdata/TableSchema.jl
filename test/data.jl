@@ -33,7 +33,7 @@ TABLE_MIN_DATA_CSV = """id,height,age,name,occupation
 5,10.4,5,string5,2016-06-15 04:00:00
 """
 
-TABLE_MIN_INVALID_CSV = """id,height,age,name,occupation
+TABLE_BAD_DATA_CSV = """id,height,age,name,occupation
 1,10.0,1,string1,2012-06-15 00:00:00
 2,10.1,2,string2,2013-06-15 01:00:00
 ,10.2,3,string3,2014-06-15 02:00:00
