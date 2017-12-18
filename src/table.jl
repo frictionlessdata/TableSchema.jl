@@ -48,17 +48,14 @@ function validate(t::Table)
     # !valid(t.schema) &&
     #     throw(TableValidationException("Schema not valid"))
     tr = TableSchema.read(t)
-    for row = 1:size(tr, 2)
-        println(row)
+    for r = 1:size(tr, 2)
+        row = tr[r,:]
         for fld in t.schema.fields
             ix = findin(t.headers, [fld.name])
-            println(fld.name)
-            if length(ix) == 1
-                println(ix)
-                checkrow(fld, row[ix[1]])
-            else
+            if length(ix) != 1
                 throw(TableValidationException(fld.name))
             end
+            checkrow(fld, row[ix[1]])
         end
     end
         # message =
