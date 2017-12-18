@@ -13,15 +13,27 @@ mutable struct Constraints
     # pattern
     # enum
 
-    function Constraints(d::Dict)
+    function Constraints()
         new(
-            haskey(d, "required") ? lowercase(d["required"]) == "true" : false,
-            haskey(d, "unique") ? lowercase(d["unique"]) == "true" : false,
-            haskey(d, "minLength") ? Integer(d["minLength"]) : -1,
-            haskey(d, "maxLength") ? Integer(d["maxLength"]) : -1,
-            haskey(d, "minimum") ? Integer(d["minimum"]) : -1,
-            haskey(d, "maximum") ? Integer(d["maximum"]) : -1,
+            false, # required::Bool
+            false, # unique::Bool
+            -1,    # minlength::Integer
+            -1,    # maxlength::Integer
+            -1,    # minimum::Integer
+            -1,    # maximum::Integer
+                # pattern
+                # enum
         )
+    end
+
+    function Constraints(d::Dict)
+        c = new()
+        for fld in fieldnames(c)
+            if haskey(d, String(fld))
+                setfield!(c, fld, d[String(fld)])
+            end
+        end
+        return c
     end
 end
 
