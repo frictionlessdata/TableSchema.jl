@@ -66,7 +66,7 @@ Add fields to create or expand your schema like this:
 schema = Schema()
 field = Field()
 field.descriptor._name = "A column"
-field.descriptor._type = "Integer"
+field.descriptor.typed = "Integer"
 add_field(schema, field)
 ```
 

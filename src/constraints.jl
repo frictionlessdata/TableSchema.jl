@@ -6,28 +6,26 @@ https://github.com/frictionlessdata/tableschema-jl#field
 mutable struct Constraints
     required::Bool
     unique::Bool
-    minlength::Integer
-    maxlength::Integer
+    minLength::Nullable{Integer}
+    maxLength::Nullable{Integer}
     # minimum::Integer
     # maximum::Integer
     # pattern
     # enum
 
-    function Constraints()
-        new(
+    function Constraints(d::Dict)
+        # Defaults
+        c = new(
             false, # required::Bool
             false, # unique::Bool
-            -1,    # minlength::Integer
-            -1,    # maxlength::Integer
-            # -Inf, # minimum::Integer
-            # Inf,  # maximum::Integer
+            nothing, # minlength::Integer
+            nothing, # maxlength::Integer
+            # nothing, # minimum::Integer
+            # nothing, # maximum::Integer
                 # pattern
                 # enum
         )
-    end
-
-    function Constraints(d::Dict)
-        c = new()
+        # Map from dictionary
         for fld in fieldnames(c)
             if haskey(d, String(fld))
                 setfield!(c, fld, d[String(fld)])
@@ -35,6 +33,8 @@ mutable struct Constraints
         end
         return c
     end
+
+    Constraints() = Constraints(Dict())
 end
 
 type ConstraintException <: Exception
@@ -48,18 +48,24 @@ type ConstraintException <: Exception
     #     ).format(field=self, name=name, value=value))
 end
 
-function checkrow(c::Constraints, val, all_vals::Array=[])
+function checkrow(c::Constraints, val, column::Array=[])
     c.required && (val == "" || val == nothing) &&
         throw(ConstraintException("required", val, nothing))
 
-    c.unique && length(all_vals) > 0 && in(val, all_vals) &&
+    c.unique && in(val, column) &&
         throw(ConstraintException("unique", val, nothing))
 
-    c.minlength > -1 && length(val) < c.minlength &&
-        throw(ConstraintException("minLength", val, c.minlength))
+    if typeof(val) == String
 
-    c.maxlength > -1 && length(val) > c.maxlength &&
-        throw(ConstraintException("maxLength", val, c.maxlength))
+        !isnull(c.minLength) && c.minLength > -1 &&
+            length(val) < c.minLength &&
+                throw(ConstraintException("minLength", val, c.minLength))
+
+        !isnull(c.maxLength) && c.maxLength > -1 &&
+            length(val) > c.maxLength &&
+                throw(ConstraintException("maxLength", val, c.maxLength))
+
+    end
 
     # c.minimum > -1 && val < c.minimum &&
     #     throw(ConstraintException("minimum", val, c.minimum))
