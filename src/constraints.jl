@@ -8,8 +8,8 @@ mutable struct Constraints
     unique::Bool
     minlength::Integer
     maxlength::Integer
-    minimum::Integer
-    maximum::Integer
+    # minimum::Integer
+    # maximum::Integer
     # pattern
     # enum
 
@@ -19,8 +19,8 @@ mutable struct Constraints
             false, # unique::Bool
             -1,    # minlength::Integer
             -1,    # maxlength::Integer
-            -1,    # minimum::Integer
-            -1,    # maximum::Integer
+            # -Inf, # minimum::Integer
+            # Inf,  # maximum::Integer
                 # pattern
                 # enum
         )
@@ -48,7 +48,7 @@ type ConstraintException <: Exception
     #     ).format(field=self, name=name, value=value))
 end
 
-function check(c::Constraints, val, all_vals::Array=[])
+function checkrow(c::Constraints, val, all_vals::Array=[])
     c.required && (val == "" || val == nothing) &&
         throw(ConstraintException("required", val, nothing))
 
@@ -61,11 +61,11 @@ function check(c::Constraints, val, all_vals::Array=[])
     c.maxlength > -1 && length(val) > c.maxlength &&
         throw(ConstraintException("maxLength", val, c.maxlength))
 
-    c.minimum > -1 && val < c.minimum &&
-        throw(ConstraintException("minimum", val, c.minimum))
-
-    c.maximum > -1 && val > c.maximum &&
-        throw(ConstraintException("maximum", val, c.maximum))
+    # c.minimum > -1 && val < c.minimum &&
+    #     throw(ConstraintException("minimum", val, c.minimum))
+    #
+    # c.maximum > -1 && val > c.maximum &&
+    #     throw(ConstraintException("maximum", val, c.maximum))
 
     return true
 end
