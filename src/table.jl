@@ -7,6 +7,7 @@ mutable struct Table
     source
     headers::Array{String}
     schema::Schema
+    errors::Array{ConstraintException}
 
     function get_headers(source)
         headers = [ String(s) for s in source[1,:] ]
@@ -16,15 +17,15 @@ mutable struct Table
     function Table(csvfilename::String, schema::Schema=Schema())
         source = readcsv(csvfilename)
         headers, source = get_headers(source)
-        new(source, headers, schema)
+        new(source, headers, schema, [])
     end
     function Table(csvdata::Base.AbstractIOBuffer, schema::Schema=Schema())
         source = readcsv(csvdata)
         headers, source = get_headers(source)
-        new(source, headers, schema)
+        new(source, headers, schema, [])
     end
     function Table(source, headers::Array{String}, schema::Schema=Schema())
-        new(source, headers, schema)
+        new(source, headers, schema, [])
     end
 end
 
@@ -55,7 +56,13 @@ function validate(t::Table)
             if length(ix) != 1
                 throw(TableValidationException(fld.name))
             end
-            checkrow(fld, row[ix[1]])
+            try
+                checkrow(fld, row[ix[1]])
+            catch ex
+                if isa(ex, ConstraintException)
+                    push!(t.errors, ex)
+                end
+            end
         end
     end
         # message =

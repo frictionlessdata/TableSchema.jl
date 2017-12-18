@@ -102,8 +102,9 @@ end
     @testset "Handle errors" begin
         s = Schema(DESCRIPTOR_MAX_JSON)
         t = Table(IOBuffer(TABLE_BAD_DATA_CSV), s)
-        @test_throws ConstraintException("required", "", nothing) TableSchema.validate(t)
-        # err = t.errors
-        # ...
+        TableSchema.validate(t)
+        err = t.errors
+        @test length(err) == 1
+        @test err[1].name == "required"
     end
 end
