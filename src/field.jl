@@ -28,3 +28,13 @@ end
 # test_value = NullException()
 
 checkrow(f::Field, val, col::Array=[]) = checkrow(f.constraints, val, col)
+
+function validate(f::Field)
+    if isempty(f.descriptor)
+        throw(SchemaError("Missing Descriptor"))
+    elseif f.descriptor.name == ""
+        throw(SchemaError("Name is empty"))
+    elseif f.descriptor.typed == ""
+        throw(SchemaError("Type is empty"))
+    end
+end

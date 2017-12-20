@@ -3,7 +3,7 @@ using Base.Test
 
 include("data.jl")
 
-@testset "Loading a Schema" begin
+@testset "Read a Table Schema descriptor" begin
     @testset "Minimal from dictionary" begin
         s = Schema(DESCRIPTOR_MIN)
         @test length(s.fields) == 2
@@ -30,8 +30,15 @@ include("data.jl")
     end
 end
 
-@testset "Validating a Schema" begin
-    @testset "Create a schema from scratch" begin
+@testset "Validating a Table Schema" begin
+    @testset "Read in from JSON and modified" begin
+        s = Schema(DESCRIPTOR_MIN_JSON)
+        @test length(s.fields) == 2
+        @test s.fields[1].name == "id"
+        @test !s.fields[2].constraints.required
+        @test valid(s)
+    end
+    @testset "Created from scratch" begin
         f = Field("width")
         f.typed = "integer"
         f.constraints.required = true
@@ -39,17 +46,19 @@ end
         TableSchema.add_field(s, f)
         @test length(s.fields) == 1
         @test s.fields[1].constraints.required
+        @test valid(s)
     end
-    # @testset "Check foreign keys" begin
-    #     s = Schema(DESCRIPTOR_MAX_JSON)
-    #     d1 = s.fields[1]
-    #     @test length(s.foreignKeys) == 1
-    # end
-    # @testset "Handle errors" begin
+    @testset "Check foreign keys" begin
+        s = Schema(DESCRIPTOR_MAX_JSON)
+        d1 = s.fields[1]
+        @test length(s.foreignKeys) == 1
+    end
+    @testset "Handle errors from loaded schema" begin
     #     s = Schema(BAD_SCHEMA)
+    #     @test !valid(s)
     #     err = s.errors
     #     ...
-    # end
+    end
 end
 
 @testset "Loading a Table" begin
@@ -97,7 +106,7 @@ end
         @test TableSchema.checkrow(s.fields[1], tr[1,1])
         @test TableSchema.checkrow(s.fields[2], tr[2,2])
         @test TableSchema.checkrow(s.fields[3], tr[3,3])
-        @test_throws ConstraintException TableSchema.checkrow(s.fields[1], "")
+        @test_throws ConstraintError TableSchema.checkrow(s.fields[1], "")
     end
     @testset "Handle errors" begin
         s = Schema(DESCRIPTOR_MAX_JSON)

@@ -7,7 +7,7 @@ mutable struct Table
     source
     headers::Array{String}
     schema::Schema
-    errors::Array{ConstraintException}
+    errors::Array{ConstraintError}
 
     function get_headers(source)
         headers = [ String(s) for s in source[1,:] ]
@@ -59,7 +59,7 @@ function validate(t::Table)
             try
                 checkrow(fld, row[ix[1]])
             catch ex
-                if isa(ex, ConstraintException)
+                if isa(ex, ConstraintError)
                     push!(t.errors, ex)
                 end
             end

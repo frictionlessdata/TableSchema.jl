@@ -3,12 +3,6 @@ Table Schema main type
 https://github.com/frictionlessdata/tableschema-jl#schema
 """
 
-type SchemaError
-    message::String
-    key::String
-    line::Int16
-end
-
 mutable struct Schema
     errors::Array{SchemaError}
     descriptor::Dict
@@ -38,8 +32,21 @@ mutable struct Schema
     end
 end
 
-valid(s::Schema) = throw(ErrorException("Not implemented"))
-errors(s::Schema) = throw(ErrorException("Not implemented"))
+type SchemaError <: Exception
+    message::String
+    key::String
+    line::Int16
+end
+
+function validate(s::Schema)
+    if isempty(s.descriptor)
+        throw(SchemaError("Missing Descriptor"))
+    else
+        # validate each field
+        throw(SchemaError("Some other error, I'm sure"))
+    end
+end
+
 field_names(s::Schema) = [ f.descriptor.name for f in s.fields ]
 get_field(s::Schema, name::String) = [ f for f in s.fields if f.name == name ][1] || throw(ErrorException("Not found"))
 add_field(s::Schema, d::Dict) = push!(s.fields, Field(d))

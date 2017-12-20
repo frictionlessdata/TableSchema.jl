@@ -37,7 +37,7 @@ mutable struct Constraints
     Constraints() = Constraints(Dict())
 end
 
-type ConstraintException <: Exception
+type ConstraintError <: Exception
     name::String
     value
     expected
@@ -45,28 +45,28 @@ end
 
 function checkrow(c::Constraints, val, column::Array=[])
     c.required && (val == "" || val == nothing) &&
-        throw(ConstraintException("required", val, nothing))
+        throw(ConstraintError("required", val, nothing))
 
     c.unique && in(val, column) &&
-        throw(ConstraintException("unique", val, nothing))
+        throw(ConstraintError("unique", val, nothing))
 
     if typeof(val) == String
 
         !isnull(c.minLength) && c.minLength > -1 &&
             length(val) < c.minLength &&
-                throw(ConstraintException("minLength", val, c.minLength))
+                throw(ConstraintError("minLength", val, c.minLength))
 
         !isnull(c.maxLength) && c.maxLength > -1 &&
             length(val) > c.maxLength &&
-                throw(ConstraintException("maxLength", val, c.maxLength))
+                throw(ConstraintError("maxLength", val, c.maxLength))
 
     end
 
     # c.minimum > -1 && val < c.minimum &&
-    #     throw(ConstraintException("minimum", val, c.minimum))
+    #     throw(ConstraintError("minimum", val, c.minimum))
     #
     # c.maximum > -1 && val > c.maximum &&
-    #     throw(ConstraintException("maximum", val, c.maximum))
+    #     throw(ConstraintError("maximum", val, c.maximum))
 
     return true
 end
