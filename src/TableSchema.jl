@@ -7,11 +7,12 @@ module TableSchema
 export Table
 export Schema
 export Field
-# export validate
+export validate
 # export infer
 
 export TableValidationException
 export ConstraintError
+export SchemaError
 
 using Base.Iterators: filter
 using Base.Iterators: Repeated, repeated

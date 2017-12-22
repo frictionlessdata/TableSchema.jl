@@ -29,12 +29,18 @@ end
 
 checkrow(f::Field, val, col::Array=[]) = checkrow(f.constraints, val, col)
 
+type FieldError <: Exception
+    message::String
+    # key::String
+    # line::Int16
+end
+
 function validate(f::Field)
     if isempty(f.descriptor)
-        throw(SchemaError("Missing Descriptor"))
+        throw(FieldError("Missing Descriptor"))
     elseif f.descriptor.name == ""
-        throw(SchemaError("Name is empty"))
+        throw(FieldError("Name is empty"))
     elseif f.descriptor.typed == ""
-        throw(SchemaError("Type is empty"))
+        throw(FieldError("Type is empty"))
     end
 end

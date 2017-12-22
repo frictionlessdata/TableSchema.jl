@@ -36,7 +36,7 @@ end
         @test length(s.fields) == 2
         @test s.fields[1].name == "id"
         @test !s.fields[2].constraints.required
-        @test valid(s)
+        @test validate(s)
     end
     @testset "Created from scratch" begin
         f = Field("width")
@@ -46,18 +46,18 @@ end
         TableSchema.add_field(s, f)
         @test length(s.fields) == 1
         @test s.fields[1].constraints.required
-        @test valid(s)
+        @test_throws SchemaError validate(s)
     end
     @testset "Check foreign keys" begin
-        s = Schema(DESCRIPTOR_MAX_JSON)
-        d1 = s.fields[1]
-        @test length(s.foreignKeys) == 1
+        # s = Schema(DESCRIPTOR_MAX_JSON)
+        # d1 = s.fields[1]
+        # @test length(s.foreignKeys) == 1
     end
     @testset "Handle errors from loaded schema" begin
-    #     s = Schema(BAD_SCHEMA)
-    #     @test !valid(s)
-    #     err = s.errors
-    #     ...
+        # s = Schema(BAD_SCHEMA)
+        # @test !validate(s)
+        # err = s.errors
+        # ...
     end
 end
 
@@ -74,7 +74,7 @@ end
         # iterate over the rows
         @test sum([ row[2] for row in t ]) == 51
         # no schema, hence exception
-        @test_throws TableValidationException TableSchema.validate(t)
+        @test_throws TableValidationException validate(t)
     end
     @testset "Read data from memory" begin
         t = Table(IOBuffer(TABLE_MIN_DATA_CSV))
@@ -89,7 +89,7 @@ end
         # iterate over the rows
         @test sum([ row[2] for row in t ]) == 51
         # no schema, hence exception
-        @test_throws TableValidationException TableSchema.validate(t)
+        @test_throws TableValidationException validate(t)
     end
     @testset "Infer the Schema" begin
     end
@@ -111,7 +111,7 @@ end
     @testset "Handle errors" begin
         s = Schema(DESCRIPTOR_MAX_JSON)
         t = Table(IOBuffer(TABLE_BAD_DATA_CSV), s)
-        TableSchema.validate(t)
+        validate(t)
         err = t.errors
         @test length(err) == 1
         @test err[1].name == "required"
