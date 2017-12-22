@@ -11,9 +11,7 @@ A library for working with [Table Schema](http://specs.frictionlessdata.io/table
 
 > Table Schema is a simple language- and implementation-agnostic way to declare a schema for tabular data. Table Schema is well suited for use cases around handling and validating tabular data in text formats such as CSV, but its utility extends well beyond this core usage, towards a range of applications where data benefits from a portable schema format.
 
-:construction: This package is pre-release and under heavy development. Please see [DESIGN.md](DESIGN.md) and visit the [issues page](https://github.com/frictionlessdata/tableschema-jl/issues) to contribute.
-
-## Features
+### Features
 
 - `Table` class for working with data and schema
 - `Schema` class for working with schemata
@@ -21,8 +19,17 @@ A library for working with [Table Schema](http://specs.frictionlessdata.io/table
 - `validate` function for validating schema descriptors
 - `infer` function that creates a schema based on a data sample
 
+### Status
+
+:construction: This package is pre-release and under heavy development. Please see [DESIGN.md](DESIGN.md) for a detailed overview of our goals, and visit the [issues page](https://github.com/frictionlessdata/tableschema-jl/issues) to contribute and make suggestions. For questions that need to a real time response, reach out via [Gitter](https://gitter.im/frictionlessdata/chat). Thanks! :construction:
 
 # Usage
+
+We aim to make this library compatible with all widely used approaches to work with tabular data in Julia.
+
+Please visit [our wiki](https://github.com/frictionlessdata/datapackage-jl/wiki) for a list of related projects that we are tracking, and contibute use cases there or as enhancement [issues](https://github.com/frictionlessdata/tableschema-jl/issues).
+
+See `examples` folder and unit tests in [runtests.jl](test/runtests.jl) for current usage.
 
 ## Table
 
