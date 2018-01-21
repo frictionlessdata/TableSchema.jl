@@ -18,23 +18,23 @@ mutable struct Schema
     fields::Array{Field}
 
     function Schema(d::Dict, strict::Bool=false)
-        strict && throw(ErrorException("Not implemented")) # TODO
-        fls = haskey(d, "fields") ?
-            [ Field(f) for f in d["fields"] ] : []
+        fls = haskey(d, "fields") ? [ Field(f) for f in d["fields"] ] : []
         pk = haskey(d, "primaryKey") ? d["primaryKey"] : []
         mvs = haskey(d, "missingValues") ? d["missingValues"] : []
         fks = [] # TODO
         err = []
-        new(err, d, pk, fks, mvs, fls)
+        s = new(err, d, pk, fks, mvs, fls)
+        strict && validate(s)
+        s
     end
 
-    function Schema(ts_json::String)
-        dict = JSON.parse(ts_json)
-        Schema(dict)
+    function Schema(filename::String, strict::Bool=false)
+        dict = JSON.parsefile(filename)
+        Schema(dict, strict)
     end
 
-    function Schema()
-        Schema(Dict())
+    function Schema(strict::Bool=false)
+        Schema(Dict(), strict)
     end
 end
 

@@ -31,7 +31,7 @@ include("data.jl")
 end
 
 @testset "Validating a Table Schema" begin
-    @testset "Read in from JSON and modified" begin
+    @testset "Read in from JSON and validate" begin
         s = Schema(DESCRIPTOR_MIN_JSON)
         @test length(s.fields) == 2
         @test s.fields[1].name == "id"
@@ -53,7 +53,8 @@ end
         # d1 = s.fields[1]
         # @test length(s.foreignKeys) == 1
     end
-    @testset "Handle errors from loaded schema" begin
+    @testset "Handle schema errors" begin
+        @test_throws SchemaError Schema("data/schema_invalid_empty.json", true)
         # s = Schema(BAD_SCHEMA)
         # @test !validate(s)
         # err = s.errors
@@ -63,7 +64,7 @@ end
 
 @testset "Loading a Table" begin
     @testset "Read data from a file" begin
-        t = Table(TABLE_MIN_FILE_CSV)
+        t = Table("data/data_numeric.csv")
         # check the headers
         @test length(t.headers) == 5
         @test t.headers[2] == "height"

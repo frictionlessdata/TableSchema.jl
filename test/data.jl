@@ -5,10 +5,10 @@ DESCRIPTOR_MIN = Dict(
         Dict( "name" => "height", "type" => "integer" )
     ]
 )
-DESCRIPTOR_MIN_JSON = """
+DESCRIPTOR_MIN_JSON = JSON.parse("""
 {"fields": [{"name": "id"}, {"name": "height", "type": "integer"}]}
-"""
-DESCRIPTOR_MAX_JSON = """
+""")
+DESCRIPTOR_MAX_JSON = JSON.parse("""
 {
     "fields": [
         {"name": "id", "type": "string", "constraints": {"required": true}},
@@ -21,7 +21,7 @@ DESCRIPTOR_MAX_JSON = """
     "foreignKeys": [{"fields": ["name"], "reference": {"resource": "", "fields": ["id"]}}],
     "missingValues": ["", "-", "null"]
 }
-"""
+""")
 
 TABLE_MIN_FILE_CSV = "test/files/table-min.csv"
 
@@ -41,7 +41,7 @@ TABLE_BAD_DATA_CSV = """id,height,age,name,occupation
 5,10.4,not good,1234,5678
 """
 
-TABLE_MIN_SCHEMA_JSON = """
+TABLE_MIN_SCHEMA_JSON = JSON.parse("""
 {
   "fields": [
     {"name": "id", "type": "integer", "constraints": {"required": true}},
@@ -52,4 +52,4 @@ TABLE_MIN_SCHEMA_JSON = """
   ],
   "primaryKey": "id"
 }
-"""
+""")
