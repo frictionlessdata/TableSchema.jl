@@ -47,13 +47,50 @@ function validate(s::Schema)
     return true
 end
 
+function guess_type(value)
+    if isa(value, AbstractString)
+        return "string"
+    elseif isa(value, Int)
+        return "integer"
+    elseif isa(value, Number)
+        return "number"
+    else
+        return nothing
+    end
+end
+
+function infer(s::Schema, rows::Array{Any}, headers=1)
+    # TODO: get headers if missing
+    for (c, header) in enumerate(headers)
+        if has_field(s, header)
+            continue
+        end
+        type_match = nothing
+        for (r, row) in enumerate(rows)
+            guess = guess_type(row[c])
+            if type_match == nothing
+                type_match = guess
+            elseif type_match != guess
+                # TODO: log and continue
+                @printf("Conflicting guess %s at (%d, %d)\n", type_match, r, c)
+            end
+        end
+        f = Field(header)
+        if type_match != nothing
+            f.typed = type_match
+        end
+        add_field(s, f)
+    end
+end
+
 field_names(s::Schema) = [ f.descriptor.name for f in s.fields ]
 get_field(s::Schema, name::String) = [ f for f in s.fields if f.name == name ][1] || throw(ErrorException("Not found"))
+has_field(s::Schema, name::String) = length([ true for f in s.fields if f.name == name ]) > 0
 add_field(s::Schema, d::Dict) = push!(s.fields, Field(d))
 add_field(s::Schema, f::Field) = push!(s.fields, f)
 remove_field(s::Schema, name::String) = pop!(s.fields, get_field(s, name))
 cast_row(s::Schema, row::Array{Any}) = throw(ErrorException("Not implemented"))
-infer(s::Schema, rows::Array{Any}, headers=1) = throw(ErrorException("Not implemented"))
+# infer(s::Schema, rows::Array{Any}, headers=1) = throw(ErrorException("Not implemented"))
 commit(s::Schema, strict=nothing) = throw(ErrorException("Not implemented"))
 save(s::Schema, target::String) = throw(ErrorException("Not implemented"))
 

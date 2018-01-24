@@ -93,6 +93,10 @@ end
         @test_throws TableValidationException validate(t)
     end
     @testset "Infer the Schema" begin
+        t = Table(IOBuffer(TABLE_MIN_DATA_CSV))
+        tr = TableSchema.read(t)
+        s = Schema()
+        TableSchema.infer(s, tr, t.headers)
     end
     @testset "Save the Table" begin
     end
