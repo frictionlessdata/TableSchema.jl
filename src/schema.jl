@@ -48,12 +48,48 @@ function validate(s::Schema)
 end
 
 function guess_type(value)
-    if isa(value, AbstractString)
-        return "string"
-    elseif isa(value, Int)
+    if isa(value, Int)
         return "integer"
     elseif isa(value, Number)
         return "number"
+    elseif isa(value, Bool)
+        return "boolean"
+    elseif isa(value, AbstractString)
+        try
+            df = DateFormat("YYYY-MM-DDThh:mm:ssZ")
+            dd = DateTime(value, df)
+            return "datetime"
+        end
+        try
+            df = DateFormat("HH:MM:SS")
+            dd = DateTime(value, df)
+            return "time"
+        end
+        try
+            df = DateFormat("y-m-d")
+            dd = Date(value, df)
+            return "date"
+        end
+        gp = split(value, ",")
+        if length(gp) == 2
+            try
+                lon = float(gp[1])
+                lat = float(gp[2])
+                if lon <= 180 && lon >= -180 &&
+                    lat <= 90 && lat >= -90
+                        return "geopoint"
+                end
+            end
+        end
+        try
+            obj = JSON.parse(value)
+            if isa(obj, Array)
+                return "array"
+            elseif isa(obj, Dict)
+                return "object"
+            end
+        end
+        return "string"
     else
         return nothing
     end
@@ -70,13 +106,13 @@ function infer(s::Schema, rows::Array{Any}, headers=1)
         for (r, val) in enumerate(col)
             guess = guess_type(val)
             if guess == nothing
-                @printf("Could not guess type at (%d, %d)\n", r, c)
+                # @printf("Could not guess type at (%d, %d)\n", r, c)
             elseif type_match == nothing
                 type_match = guess
                 # @printf("Guessed %s at (%d, %d)\n", guess, r, c)
             elseif type_match != guess
-                # TODO: log and continue
-                @printf("Guess %s conflicts with %s at (%d, %d)\n", guess, type_match, r, c)
+                # TODO: log and continue?
+                # @printf("Guess %s conflicts with %s at (%d, %d)\n", guess, type_match, r, c)
             end
             # print(val)
             # print("\n")
