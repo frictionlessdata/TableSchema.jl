@@ -66,14 +66,20 @@ function infer(s::Schema, rows::Array{Any}, headers=1)
             continue
         end
         type_match = nothing
-        for (r, row) in enumerate(rows)
-            guess = guess_type(row[c])
-            if type_match == nothing
+        col = view(rows, :, c)
+        for (r, val) in enumerate(col)
+            guess = guess_type(val)
+            if guess == nothing
+                @printf("Could not guess type at (%d, %d)\n", r, c)
+            elseif type_match == nothing
                 type_match = guess
+                # @printf("Guessed %s at (%d, %d)\n", guess, r, c)
             elseif type_match != guess
                 # TODO: log and continue
-                @printf("Conflicting guess %s at (%d, %d)\n", type_match, r, c)
+                @printf("Guess %s conflicts with %s at (%d, %d)\n", guess, type_match, r, c)
             end
+            # print(val)
+            # print("\n")
         end
         f = Field(header)
         if type_match != nothing
