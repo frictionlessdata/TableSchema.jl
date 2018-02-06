@@ -101,25 +101,26 @@ function infer(s::Schema, rows::Array{Any}, headers=1)
         if has_field(s, header)
             continue
         end
-        type_match = nothing
+        type_match = Dict()
         col = view(rows, :, c)
         for (r, val) in enumerate(col)
             guess = guess_type(val)
             if guess == nothing
-                # @printf("Could not guess type at (%d, %d)\n", r, c)
-            elseif type_match == nothing
-                type_match = guess
+                @printf("Could not guess type at (%d, %d)\n", r, c)
+            else
+                if !haskey(type_match, guess)
+                    type_match[guess] = 0
+                end
+                type_match[guess] = type_match[guess] + 1
                 # @printf("Guessed %s at (%d, %d)\n", guess, r, c)
-            elseif type_match != guess
-                # TODO: log and continue?
-                # @printf("Guess %s conflicts with %s at (%d, %d)\n", guess, type_match, r, c)
             end
             # print(val)
             # print("\n")
         end
         f = Field(header)
-        if type_match != nothing
-            f.typed = type_match
+        if length(type_match)>0
+            sorted = sort(collect(type_match), by=x->x[2], rev=true)
+            f.typed = sorted[1][1]
         end
         add_field(s, f)
     end
