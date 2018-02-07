@@ -54,21 +54,24 @@ function validate(t::Table)
         for fld in t.schema.fields
             ix = findin(t.headers, [fld.name])
             if length(ix) != 1
-                throw(TableValidationException(fld.name))
+                # TODO: shouldn't this just cause a ConstraintError?
+                throw(TableValidationException(string("Missing field defined in Schema: ", fld.name)))
             end
             try
                 checkrow(fld, row[ix[1]])
             catch ex
                 if isa(ex, ConstraintError)
+                    ex.field = fld
                     push!(t.errors, ex)
                 end
             end
         end
     end
-        # message =
-        #     'Field "{field.name}" has constraint "{name}" '
-        #     'which is not satisfied for value "{value}"'
-        #     ).format(field=self, name=name, value=value))
+    # message =
+    #     'Field "{field.name}" has constraint "{name}" '
+    #     'which is not satisfied for value "{value}"'
+    #     ).format(field=self, name=name, value=value))
+    return length(t.errors) == 0
 end
 
 Base.length(t::Table) = size(t.source, 1)
