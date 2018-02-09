@@ -15,10 +15,19 @@ struct ConstraintError <: Exception
     ConstraintError(m::String, v) = new(m, nothing, v, nothing)
 end
 
+type FieldError <: Exception
+    message::String
+    # key::String
+    # line::Int16
+end
+
 struct SchemaError <: Exception
     message::String
     # key::String
     # line::Int16
+
+    SchemaError(m::String) = new(m)
+    SchemaError(f::FieldError) = new(f.message)
 end
 
 struct TableValidationException <: Exception

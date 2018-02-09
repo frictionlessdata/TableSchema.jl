@@ -5,7 +5,7 @@
         @test length(s.fields) == 2
         @test s.fields[1].name == "id"
         @test !s.fields[2].constraints.required
-        @test validate(s)
+        @test validate(s) == true
     end
 
     @testset "Created from scratch" begin

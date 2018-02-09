@@ -27,18 +27,12 @@ end
 # cast_value = NullException()
 # test_value = NullException()
 
-type FieldError <: Exception
-    message::String
-    # key::String
-    # line::Int16
-end
-
 function validate(f::Field)
-    if isempty(f.descriptor)
+    isempty(f.descriptor) &&
         throw(FieldError("Missing Descriptor"))
-    elseif f.descriptor.name == ""
+    f.name == "" &&
         throw(FieldError("Name is empty"))
-    elseif f.descriptor.typed == ""
+    f.typed == "" &&
         throw(FieldError("Type is empty"))
-    end
+    return true
 end

@@ -39,16 +39,21 @@ function validate(s::Schema, strict::Bool=false)
     if length(s.fields) == 0
         push!(s.errors, SchemaError("No Fields specified"))
     end
+    for fld in s.fields
+        try
+            validate(fld)
+        catch ex
+            if isa(ex, FieldError)
+                push!(s.errors, SchemaError(ex))
+            else
+                throw(ex)
+            end
+        end
+    end
     if strict && length(s.errors)>0
         throw(s.errors[1])
     end
-
-    # for fld in s.fields
-    #     try
-    #         validate(fld)
-    #     catch ex::FieldError
-
-    return true
+    return length(s.errors) == 0
 end
 
 function guess_type(value)
