@@ -33,6 +33,14 @@
         # ...
     end
 
+    @testset "Invalid foreign key in schema" begin
+        # TODO
+    end
+
+    @testset "Invalid primary key in schema" begin
+        # TODO
+    end
+
 end
 @testset "Validating a Table with Schema" begin
 
@@ -47,7 +55,7 @@ end
         @test_throws ConstraintError TableSchema.checkrow(s.fields[1], "")
     end
 
-    @testset "Handle errors" begin
+    @testset "Schema constraint errors" begin
         s = Schema("data/schema_valid_missing.json")
         t = Table("data/data_constraints.csv", s)
         @test !(validate(t))
