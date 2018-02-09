@@ -3,12 +3,6 @@ Table Schema main type
 https://github.com/frictionlessdata/tableschema-jl#schema
 """
 
-type SchemaError <: Exception
-    message::String
-    # key::String
-    # line::Int16
-end
-
 mutable struct Schema
     errors::Array{SchemaError}
     descriptor::Dict

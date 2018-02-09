@@ -24,21 +24,8 @@ mutable struct Field
     Field(name::String) = Field(Dict( "name" => name ))
 end
 
-# type ConstraintError <: Exception
-#     name::String
-#     value
-#     expected
-#     field::Field
-#
-#     ConstraintError(n::String, v) = ConstraintError(n, v, nothing, nothing)
-#     ConstraintError(n::String, v, e) = ConstraintError(n, v, e, nothing)
-#     ConstraintError(n::String, v, e, f) = ConstraintError(n, v, e, f)
-# end
-
 # cast_value = NullException()
 # test_value = NullException()
-
-checkrow(f::Field, val, col::Array=[]) = checkrow(f.constraints, val, col)
 
 type FieldError <: Exception
     message::String

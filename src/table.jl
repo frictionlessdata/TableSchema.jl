@@ -40,9 +40,6 @@ function save(t::Table, target::String)
     throw(ErrorException("Not implemented"))
 end
 
-type TableValidationException <: Exception
-    var::String
-end
 function validate(t::Table)
     is_empty(t.schema) &&
         throw(TableValidationException("No schema available"))
@@ -61,7 +58,6 @@ function validate(t::Table)
                 checkrow(fld, row[ix[1]])
             catch ex
                 if isa(ex, ConstraintError)
-                    ex.field = fld
                     push!(t.errors, ex)
                 end
             end

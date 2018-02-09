@@ -38,9 +38,9 @@ end
 
     @testset "Check constraints" begin
         s = Schema("data/schema_valid_missing.json")
-        @test s.fields[1].constraints.required
         t = Table("data/data_types.csv")
         tr = TableSchema.read(t)
+        @test s.fields[1].constraints.required
         @test TableSchema.checkrow(s.fields[1], tr[1,1])
         @test TableSchema.checkrow(s.fields[2], tr[2,2])
         @test TableSchema.checkrow(s.fields[3], tr[3,3])
@@ -51,8 +51,8 @@ end
         s = Schema("data/schema_valid_missing.json")
         t = Table("data/data_constraints.csv", s)
         @test validate(t) == false
-        @test length(t.errors) == 1
-        @test t.errors[1].name == "required"
+        @test length(t.errors) > 0
+        @test t.errors[1].message == "required"
     end
 
 end
