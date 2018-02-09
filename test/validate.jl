@@ -16,7 +16,7 @@
         TableSchema.add_field(s, f)
         @test length(s.fields) == 1
         @test s.fields[1].constraints.required
-        @test_throws SchemaError validate(s)
+        @test_throws SchemaError validate(s, true)
     end
 
     @testset "Check foreign keys" begin

@@ -18,7 +18,7 @@ mutable struct Schema
         fks = [] # TODO
         err = []
         s = new(err, d, pk, fks, mvs, fls)
-        strict && validate(s)
+        validate(s, strict)
         s
     end
 
@@ -32,12 +32,22 @@ mutable struct Schema
     end
 end
 
-function validate(s::Schema)
+function validate(s::Schema, strict::Bool=false)
     if isempty(s.descriptor)
-        throw(SchemaError("Missing Descriptor"))
-    else
-        # TODO: validate each field
+        push!(s.errors, SchemaError("Missing Descriptor"))
     end
+    if length(s.fields) == 0
+        push!(s.errors, SchemaError("No Fields specified"))
+    end
+    if strict && length(s.errors)>0
+        throw(s.errors[1])
+    end
+
+    # for fld in s.fields
+    #     try
+    #         validate(fld)
+    #     catch ex::FieldError
+
     return true
 end
 
@@ -89,8 +99,7 @@ function guess_type(value)
     end
 end
 
-function infer(s::Schema, rows::Array{Any}, headers=1)
-    # TODO: get headers if missing
+function infer(s::Schema, rows::Array{Any}, headers::Array{String})
     for (c, header) in enumerate(headers)
         if has_field(s, header)
             continue
