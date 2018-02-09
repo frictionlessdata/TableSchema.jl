@@ -3,7 +3,7 @@
         {"name": "id", "type": "string", "constraints": {"required": true}},
         {"name": "height", "type": "number"},
         {"name": "age", "type": "integer"},
-        {"name": "name", "type": "string"},
+        {"name": "name", "type": "string", "constraints": {"unique": true}},
         {"name": "occupation", "type": "string"}
     ],
     "primaryKey": ["id"],

@@ -9,7 +9,7 @@ function checkrow(f::Field, val, column::Array=[])
     c.required && (val == "" || val == nothing) &&
         throw(ConstraintError("required", f, val))
 
-    c.unique && in(val, column) &&
+    c.unique && length(findin(column, [val])) > 1 &&
         throw(ConstraintError("unique", f, val))
 
     if typeof(val) == String

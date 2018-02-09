@@ -50,9 +50,12 @@ end
     @testset "Handle errors" begin
         s = Schema("data/schema_valid_missing.json")
         t = Table("data/data_constraints.csv", s)
-        @test validate(t) == false
+        @test !(validate(t))
         @test length(t.errors) > 0
+        @test t.errors[2].message == "unique"
+        @test t.errors[2].field.name == "name"
         @test t.errors[1].message == "required"
+        @test t.errors[1].field.name == "id"
     end
 
 end
