@@ -25,7 +25,9 @@ DEFAULT_FORMAT = "default"
 
 include("constraints.jl")
 include("field.jl")
+include("exceptions.jl")
 include("schema.jl")
 include("table.jl")
+include("validators.jl")
 
 end # module

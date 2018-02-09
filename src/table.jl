@@ -40,35 +40,36 @@ function save(t::Table, target::String)
     throw(ErrorException("Not implemented"))
 end
 
-type TableValidationException <: Exception
-    var::String
-end
 function validate(t::Table)
     is_empty(t.schema) &&
         throw(TableValidationException("No schema available"))
     # !valid(t.schema) &&
     #     throw(TableValidationException("Schema not valid"))
     tr = TableSchema.read(t)
-    for r = 1:size(tr, 2)
-        row = tr[r,:]
-        for fld in t.schema.fields
-            ix = findin(t.headers, [fld.name])
-            if length(ix) != 1
-                throw(TableValidationException(fld.name))
+    for fld in t.schema.fields
+        ix = findin(t.headers, [fld.name])
+        if length(ix) != 1
+            # TODO: shouldn't this just cause a ConstraintError?
+            throw(TableValidationException(string("Missing field defined in Schema: ", fld.name)))
+        end
+        try
+            column = tr[:,ix]
+            for r = 1:size(tr, 2)
+                row = tr[r,:]
+                checkrow(fld, row[ix[1]], column)
             end
-            try
-                checkrow(fld, row[ix[1]])
-            catch ex
-                if isa(ex, ConstraintError)
-                    push!(t.errors, ex)
-                end
+        catch ex
+            if isa(ex, ConstraintError)
+                push!(t.errors, ex)
             end
         end
     end
-        # message =
-        #     'Field "{field.name}" has constraint "{name}" '
-        #     'which is not satisfied for value "{value}"'
-        #     ).format(field=self, name=name, value=value))
+    # foreach(r -> println(r.message,"-",r.value,"-",r.field.name), t.errors)
+    # message =
+    #     'Field "{field.name}" has constraint "{name}" '
+    #     'which is not satisfied for value "{value}"'
+    #     ).format(field=self, name=name, value=value))
+    return length(t.errors) == 0
 end
 
 Base.length(t::Table) = size(t.source, 1)
