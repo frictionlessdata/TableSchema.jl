@@ -41,6 +41,8 @@ type ConstraintError <: Exception
     name::String
     value
     expected
+    fieldname::String
+    rownumber::Integer
 end
 
 function checkrow(c::Constraints, val, column::Array=[])
