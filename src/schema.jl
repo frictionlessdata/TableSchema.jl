@@ -15,9 +15,8 @@ mutable struct Schema
         fls = haskey(d, "fields") ? [ Field(f) for f in d["fields"] ] : []
         pk = haskey(d, "primaryKey") ? d["primaryKey"] : []
         mvs = haskey(d, "missingValues") ? d["missingValues"] : []
-        fks = [] # TODO
-        err = []
-        s = new(err, d, pk, fks, mvs, fls)
+        fks = haskey(d, "foreignKeys") ? d["foreignKeys"] : []
+        s = new([], d, pk, fks, mvs, fls)
         validate(s, strict)
         s
     end
@@ -50,6 +49,31 @@ function validate(s::Schema, strict::Bool=false)
             end
         end
     end
+    for key in s.foreign_keys
+        if !(haskey(key, "fields"))
+            push!(s.errors, SchemaError("'fields' is required on all foreignKeys"))
+            key["fields"] = []
+        end
+        if !(haskey(key, "reference"))
+            push!(s.errors, SchemaError("'reference' is required on all foreignKeys"))
+            key["reference"] = Dict()
+        end
+        if !(haskey(key["reference"], "resource"))
+            push!(s.errors, SchemaError("'resource' is required on each reference of a foreignKey"))
+            key["reference"]["resource"] = ""
+        end
+        if !(haskey(key["reference"], "fields"))
+            push!(s.errors, SchemaError("'fields' is required on each reference of a foreignKey"))
+            key["reference"]["fields"] = []
+        end
+        if isa(key["fields"], String)
+            key["fields"] = [key["fields"]]
+        end
+        if isa(key["reference"]["fields"], String)
+            key["reference"]["fields"] = [key["reference"]["fields"]]
+        end
+    end
+    # Error handling
     if strict && length(s.errors)>0
         throw(s.errors[1])
     end
