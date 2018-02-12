@@ -5,7 +5,7 @@
         @test length(s.fields) == 2
         @test s.fields[1].name == "id"
         @test !s.fields[2].constraints.required
-        @test validate(s) == true
+        @test TableSchema.is_valid(s) == true
     end
 
     @testset "Created from scratch" begin
@@ -29,8 +29,8 @@
         @test_throws SchemaError Schema("data/schema_invalid_empty.json", true)
         @test_throws SchemaError Schema("data/schema_invalid_wrong_type.json", true)
         s = Schema("data/schema_invalid_multiple_errors.json")
-        @test !(validate(s))
-        @test length(s.errors) == 7
+        @test !(TableSchema.is_valid(s))
+        @test length(s.errors) == 4
     end
 
     @testset "Invalid foreign keys in schema" begin
@@ -48,6 +48,14 @@
         @test_throws SchemaError Schema("data/schema_invalid_pk_array.json", true)
         @test_throws SchemaError Schema("data/schema_invalid_pk_is_wrong_type.json", true)
         @test_throws SchemaError Schema("data/schema_invalid_pk_no_fields.json", true)
+    end
+
+    @testset "Detailed validation errors" begin
+        # TODO see https://github.com/frictionlessdata/tableschema-py/blob/c7b2125108d82029dab7bf6a31c894497837a6ac/tests/test_validate.py#L98
+        s = Schema("data/schema_invalid_pk_string.json")
+        @test !(TableSchema.is_valid(s))
+        @test length(s.errors) == 1
+        @test s.errors[1].key == "identifier"
     end
 
 end

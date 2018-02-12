@@ -33,23 +33,18 @@ mutable struct Schema
 
         # Detailed validation
         validate(s, strict)
-        return s
     end
 
     function Schema(a::Array, strict::Bool=false)
         s = new([SchemaError("Descriptor must be an object, not an array")], Dict(),[],[],[],[])
         validate(s, strict)
-        return s
     end
 
-    function Schema(filename::String, strict::Bool=false)
-        dict = JSON.parsefile(filename)
-        Schema(dict, strict)
-    end
+    Schema(filename::String, strict::Bool=false) =
+        Schema(JSON.parsefile(filename), strict)
 
-    function Schema(strict::Bool=false)
+    Schema(strict::Bool=false) =
         Schema(Dict(), strict)
-    end
 end
 
 function validate(s::Schema, strict::Bool=false)
@@ -135,7 +130,7 @@ function validate(s::Schema, strict::Bool=false)
     if strict && length(s.errors)>0
         throw(s.errors[1])
     end
-    return length(s.errors) == 0
+    return s
 end
 
 function guess_type(value)
@@ -228,3 +223,4 @@ commit(s::Schema, strict=nothing) = throw(ErrorException("Not implemented"))
 save(s::Schema, target::String) = throw(ErrorException("Not implemented"))
 
 is_empty(s::Schema) = Base.isempty(s.fields)
+is_valid(s::Schema) = (length(s.errors) == 0)
