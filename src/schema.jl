@@ -14,11 +14,32 @@ mutable struct Schema
     function Schema(d::Dict, strict::Bool=false)
         fls = haskey(d, "fields") ? [ Field(f) for f in d["fields"] ] : []
         pk = haskey(d, "primaryKey") ? d["primaryKey"] : []
-        mvs = haskey(d, "missingValues") ? d["missingValues"] : []
+        if isa(pk, String); pk = [pk]; end
         fks = haskey(d, "foreignKeys") ? d["foreignKeys"] : []
-        s = new([], d, pk, fks, mvs, fls)
+        if isa(fks, String); fks = [fks]; end
+        mvs = haskey(d, "missingValues") ? d["missingValues"] : []
+        if isa(mvs, String); mvs = [mvs]; end
+
+        # Validate schema types
+        if !(isa(pk, Array))
+            s = new([SchemaError("primaryKey must be a string array")], Dict(),[],[],[],[])
+        elseif !(isa(fks, Array))
+            s = new([SchemaError("foreignKeys must be a dictionary array")], Dict(),[],[],[],[])
+        elseif !(isa(mvs, Array))
+            s = new([SchemaError("missingValues must be a string array")], Dict(),[],[],[],[])
+        else
+            s = new([], d, pk, fks, mvs, fls)
+        end
+
+        # Detailed validation
         validate(s, strict)
-        s
+        return s
+    end
+
+    function Schema(a::Array, strict::Bool=false)
+        s = new([SchemaError("Descriptor must be an object, not an array")], Dict(),[],[],[],[])
+        validate(s, strict)
+        return s
     end
 
     function Schema(filename::String, strict::Bool=false)
@@ -91,12 +112,21 @@ function validate(s::Schema, strict::Bool=false)
         # Validate field references
         for f in key["fields"]
             if !(has_field(s, f))
-                push!(s.errors, SchemaError("Missing field as defined in foreignKeys", f))
+                push!(s.errors, SchemaError("Missing field as defined in foreignKeys fields", f))
             end
         end
+        for f in key["reference"]["fields"]
+            if !(has_field(s, f))
+                push!(s.errors, SchemaError("Missing field as defined in foreignKeys references", f))
+            end
+        end
+        # Handle errors
         for e in s.errors
-            if contains(e.message, "foreignKeys") && e.key != ""
+            if contains(e.message, "foreignKeys fields") && e.key != ""
                 deleteat!(key["fields"], findin(key["fields"], [e.key]))
+            end
+            if contains(e.message, "foreignKeys references") && e.key != ""
+                deleteat!(key["reference"]["fields"], findin(key["reference"]["fields"], [e.key]))
             end
         end
     end

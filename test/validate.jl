@@ -27,14 +27,27 @@
 
     @testset "Handle schema errors" begin
         @test_throws SchemaError Schema("data/schema_invalid_empty.json", true)
+        @test_throws SchemaError Schema("data/schema_invalid_wrong_type.json", true)
+        s = Schema("data/schema_invalid_multiple_errors.json")
+        @test !(validate(s))
+        @test length(s.errors) == 7
     end
 
     @testset "Invalid foreign keys in schema" begin
+        @test_throws SchemaError Schema("data/schema_invalid_fk_string.json", true)
         @test_throws SchemaError Schema("data/schema_invalid_fk_array.json", true)
+        @test_throws SchemaError Schema("data/schema_invalid_fk_array_string.json", true)
+        @test_throws SchemaError Schema("data/schema_invalid_fk_array_string_ref.json", true)
+        @test_throws SchemaError Schema("data/schema_invalid_fk_array_wrong_number.json", true)
+        @test_throws SchemaError Schema("data/schema_invalid_fk_no_reference.json", true)
+        @test_throws SchemaError Schema("data/schema_invalid_fk_string_array_ref.json", true)
     end
 
     @testset "Invalid primary key in schema" begin
+        @test_throws SchemaError Schema("data/schema_invalid_pk_string.json", true)
         @test_throws SchemaError Schema("data/schema_invalid_pk_array.json", true)
+        @test_throws SchemaError Schema("data/schema_invalid_pk_is_wrong_type.json", true)
+        @test_throws SchemaError Schema("data/schema_invalid_pk_no_fields.json", true)
     end
 
 end
