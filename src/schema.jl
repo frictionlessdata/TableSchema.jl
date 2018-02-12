@@ -38,6 +38,8 @@ function validate(s::Schema, strict::Bool=false)
     if length(s.fields) == 0
         push!(s.errors, SchemaError("No Fields specified"))
     end
+
+    # Validate each Field
     for fld in s.fields
         try
             validate(fld)
@@ -49,6 +51,20 @@ function validate(s::Schema, strict::Bool=false)
             end
         end
     end
+
+    # Validate primary keys
+    for key in s.primary_key
+        if !(has_field(s, key))
+            push!(s.errors, SchemaError("Missing field as defined in primaryKey", key))
+        end
+    end
+    for e in s.errors
+        if contains(e.message, "primaryKey") && e.key != ""
+            deleteat!(s.primary_key, findin(s.primary_key, [e.key]))
+        end
+    end
+
+    # Validate foreign keys
     for key in s.foreign_keys
         if !(haskey(key, "fields"))
             push!(s.errors, SchemaError("'fields' is required on all foreignKeys"))
@@ -72,7 +88,19 @@ function validate(s::Schema, strict::Bool=false)
         if isa(key["reference"]["fields"], String)
             key["reference"]["fields"] = [key["reference"]["fields"]]
         end
+        # Validate field references
+        for f in key["fields"]
+            if !(has_field(s, f))
+                push!(s.errors, SchemaError("Missing field as defined in foreignKeys", f))
+            end
+        end
+        for e in s.errors
+            if contains(e.message, "foreignKeys") && e.key != ""
+                deleteat!(key["fields"], findin(key["fields"], [e.key]))
+            end
+        end
     end
+
     # Error handling
     if strict && length(s.errors)>0
         throw(s.errors[1])

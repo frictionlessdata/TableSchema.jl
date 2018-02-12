@@ -1,6 +1,6 @@
-@testset "Validating a Schema" begin
+@testset "Validating a Schema descriptor" begin
 
-    @testset "Read in from JSON and validate" begin
+    @testset "Read in from JSON" begin
         s = Schema("data/schema_valid_simple.json")
         @test length(s.fields) == 2
         @test s.fields[1].name == "id"
@@ -19,30 +19,26 @@
         @test_throws SchemaError validate(s, true)
     end
 
-    @testset "Check foreign keys" begin
-        # s = Schema("data/schema_valid_full.json")
-        # d1 = s.fields[1]
-        # @test length(s.foreignKeys) == 1
+    @testset "Check primary foreign keys" begin
+        s = Schema("data/schema_valid_full.json")
+        @test length(s.primary_key) == 4
+        @test length(s.foreign_keys) == 1
     end
 
     @testset "Handle schema errors" begin
         @test_throws SchemaError Schema("data/schema_invalid_empty.json", true)
-        # s = Schema(BAD_SCHEMA)
-        # @test !validate(s)
-        # err = s.errors
-        # ...
     end
 
-    @testset "Invalid foreign key in schema" begin
-        # TODO
+    @testset "Invalid foreign keys in schema" begin
+        @test_throws SchemaError Schema("data/schema_invalid_fk_array.json", true)
     end
 
     @testset "Invalid primary key in schema" begin
-        # TODO
+        @test_throws SchemaError Schema("data/schema_invalid_pk_array.json", true)
     end
 
 end
-@testset "Validating a Table with Schema" begin
+@testset "Validating Table data with Schema" begin
 
     @testset "Check constraints" begin
         s = Schema("data/schema_valid_missing.json")

@@ -23,11 +23,13 @@ end
 
 struct SchemaError <: Exception
     message::String
-    # key::String
-    # line::Int16
+    key::Nullable{String}
+    line::Nullable{Int16}
 
-    SchemaError(m::String) = new(m)
-    SchemaError(f::FieldError) = new(f.message)
+    SchemaError(m::String, k::String, l::Int16) = new(m, k, l)
+    SchemaError(m::String, k::String) = new(m, k, nothing)
+    SchemaError(m::String) = new(m, nothing, nothing)
+    SchemaError(f::FieldError) = new(f.message, nothing, nothing)
 end
 
 struct TableValidationException <: Exception
