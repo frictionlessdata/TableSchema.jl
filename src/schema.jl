@@ -14,21 +14,37 @@ mutable struct Schema
     function Schema(d::Dict, strict::Bool=false)
         fls = haskey(d, "fields") ? [ Field(f) for f in d["fields"] ] : []
         pk = haskey(d, "primaryKey") ? d["primaryKey"] : []
-        mvs = haskey(d, "missingValues") ? d["missingValues"] : []
+        if isa(pk, String); pk = [pk]; end
         fks = haskey(d, "foreignKeys") ? d["foreignKeys"] : []
-        s = new([], d, pk, fks, mvs, fls)
+        if isa(fks, String); fks = [fks]; end
+        mvs = haskey(d, "missingValues") ? d["missingValues"] : []
+        if isa(mvs, String); mvs = [mvs]; end
+
+        # Validate schema types
+        if !(isa(pk, Array))
+            s = new([SchemaError("primaryKey must be a string array")], Dict(),[],[],[],[])
+        elseif !(isa(fks, Array))
+            s = new([SchemaError("foreignKeys must be a dictionary array")], Dict(),[],[],[],[])
+        elseif !(isa(mvs, Array))
+            s = new([SchemaError("missingValues must be a string array")], Dict(),[],[],[],[])
+        else
+            s = new([], d, pk, fks, mvs, fls)
+        end
+
+        # Detailed validation
         validate(s, strict)
-        s
     end
 
-    function Schema(filename::String, strict::Bool=false)
-        dict = JSON.parsefile(filename)
-        Schema(dict, strict)
+    function Schema(a::Array, strict::Bool=false)
+        s = new([SchemaError("Descriptor must be an object, not an array")], Dict(),[],[],[],[])
+        validate(s, strict)
     end
 
-    function Schema(strict::Bool=false)
+    Schema(filename::String, strict::Bool=false) =
+        Schema(JSON.parsefile(filename), strict)
+
+    Schema(strict::Bool=false) =
         Schema(Dict(), strict)
-    end
 end
 
 function validate(s::Schema, strict::Bool=false)
@@ -38,6 +54,8 @@ function validate(s::Schema, strict::Bool=false)
     if length(s.fields) == 0
         push!(s.errors, SchemaError("No Fields specified"))
     end
+
+    # Validate each Field
     for fld in s.fields
         try
             validate(fld)
@@ -49,6 +67,20 @@ function validate(s::Schema, strict::Bool=false)
             end
         end
     end
+
+    # Validate primary keys
+    for key in s.primary_key
+        if !(has_field(s, key))
+            push!(s.errors, SchemaError("Missing field as defined in primaryKey", key))
+        end
+    end
+    for e in s.errors
+        if contains(e.message, "primaryKey") && e.key != ""
+            deleteat!(s.primary_key, findin(s.primary_key, [e.key]))
+        end
+    end
+
+    # Validate foreign keys
     for key in s.foreign_keys
         if !(haskey(key, "fields"))
             push!(s.errors, SchemaError("'fields' is required on all foreignKeys"))
@@ -72,12 +104,33 @@ function validate(s::Schema, strict::Bool=false)
         if isa(key["reference"]["fields"], String)
             key["reference"]["fields"] = [key["reference"]["fields"]]
         end
+        # Validate field references
+        for f in key["fields"]
+            if !(has_field(s, f))
+                push!(s.errors, SchemaError("Missing field as defined in foreignKeys fields", f))
+            end
+        end
+        for f in key["reference"]["fields"]
+            if !(has_field(s, f))
+                push!(s.errors, SchemaError("Missing field as defined in foreignKeys references", f))
+            end
+        end
+        # Handle errors
+        for e in s.errors
+            if contains(e.message, "foreignKeys fields") && e.key != ""
+                deleteat!(key["fields"], findin(key["fields"], [e.key]))
+            end
+            if contains(e.message, "foreignKeys references") && e.key != ""
+                deleteat!(key["reference"]["fields"], findin(key["reference"]["fields"], [e.key]))
+            end
+        end
     end
+
     # Error handling
     if strict && length(s.errors)>0
         throw(s.errors[1])
     end
-    return length(s.errors) == 0
+    return s
 end
 
 function guess_type(value)
@@ -170,3 +223,4 @@ commit(s::Schema, strict=nothing) = throw(ErrorException("Not implemented"))
 save(s::Schema, target::String) = throw(ErrorException("Not implemented"))
 
 is_empty(s::Schema) = Base.isempty(s.fields)
+is_valid(s::Schema) = (length(s.errors) == 0)
