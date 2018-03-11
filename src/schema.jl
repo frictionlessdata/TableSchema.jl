@@ -3,6 +3,8 @@ Table Schema main type
 https://github.com/frictionlessdata/tableschema-jl#schema
 """
 
+const MAX_ROWS_INFER = 100
+
 mutable struct Schema
     errors::Array{SchemaError}
     descriptor::Dict
@@ -181,14 +183,17 @@ function guess_type(value)
     end
 end
 
-function infer(s::Schema, rows::Array{Any}, headers::Array{String})
+function infer(s::Schema, rows::Array{Any}, headers::Array{String}, maxrows=MAX_ROWS_INFER)
     for (c, header) in enumerate(headers)
         if has_field(s, header)
             continue
         end
         type_match = Dict()
         col = view(rows, :, c)
-        for (r, val) in enumerate(col)
+        if maxrows > length(col)
+            maxrows = length(col)
+        end
+        for (r, val) in enumerate(col[1:maxrows])
             guess = guess_type(val)
             if guess == nothing
                 @printf("Could not guess type at (%d, %d)\n", r, c)
