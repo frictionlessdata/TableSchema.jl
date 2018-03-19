@@ -30,7 +30,7 @@
         @test_throws SchemaError Schema("data/schema_invalid_wrong_type.json", true)
         s = Schema("data/schema_invalid_multiple_errors.json")
         @test !(TableSchema.is_valid(s))
-        @test length(s.errors) == 4
+        @test length(s.errors) == 5
     end
 
     @testset "Invalid foreign keys in schema" begin

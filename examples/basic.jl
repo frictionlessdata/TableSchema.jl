@@ -1,3 +1,4 @@
+include("../src/TableSchema.jl")
 using TableSchema
 
 t = Table("data/data_types.csv")
