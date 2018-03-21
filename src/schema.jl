@@ -3,6 +3,8 @@ Table Schema main type
 https://github.com/frictionlessdata/tableschema-jl#schema
 """
 
+const MAX_ROWS_INFER = 100
+
 mutable struct Schema
     errors::Array{SchemaError}
     descriptor::Dict
@@ -110,10 +112,15 @@ function validate(s::Schema, strict::Bool=false)
                 push!(s.errors, SchemaError("Missing field as defined in foreignKeys fields", f))
             end
         end
-        for f in key["reference"]["fields"]
-            if !(has_field(s, f))
-                push!(s.errors, SchemaError("Missing field as defined in foreignKeys references", f))
+        if key["reference"]["resource"] == ""
+            for f in key["reference"]["fields"]
+                if !(has_field(s, f))
+                    push!(s.errors, SchemaError("Missing field as defined in foreignKeys references", f))
+                end
             end
+        end
+        if length(key["fields"]) != length(key["reference"]["fields"])
+            push!(s.errors, SchemaError("Number of source and outer foreign key references must match"))
         end
         # Handle errors
         for e in s.errors
@@ -181,14 +188,17 @@ function guess_type(value)
     end
 end
 
-function infer(s::Schema, rows::Array{Any}, headers::Array{String})
+function infer(s::Schema, rows::Array{Any}, headers::Array{String}, maxrows=MAX_ROWS_INFER)
     for (c, header) in enumerate(headers)
         if has_field(s, header)
             continue
         end
         type_match = Dict()
         col = view(rows, :, c)
-        for (r, val) in enumerate(col)
+        if maxrows > length(col)
+            maxrows = length(col)
+        end
+        for (r, val) in enumerate(col[1:maxrows])
             guess = guess_type(val)
             if guess == nothing
                 @printf("Could not guess type at (%d, %d)\n", r, c)
@@ -211,14 +221,47 @@ function infer(s::Schema, rows::Array{Any}, headers::Array{String})
     end
 end
 
+function set_primary_key(s::Schema, name::String)
+    if !(has_field(s, name))
+        throw(SchemaError("Fields defined as Primary Key must exist"))
+    end
+    if !(name in s.primary_key)
+        push!(s.primary_key, name)
+    end
+end
+
+function set_foreign_key(s::Schema, source_fields::Array{String}, resource::String, outer_fields::Array{String})
+    for key in source_fields
+        if !(has_field(s, key))
+            throw(SchemaError("Source fields must reference existing schema fields"))
+        end
+    end
+    if resource == ""
+        for key in outer_fields
+            if !(has_field(s, key))
+                throw(SchemaError("Outer fields must reference existing schema fields to set empty reference"))
+            end
+        end
+    end
+    push!(s.foreign_keys, Dict(
+            "fields" => source_fields,
+            "reference" => Dict(
+                "resource" => resource,
+                "fields" => outer_fields
+            )
+        )
+    )
+end
+
 field_names(s::Schema) = [ f.descriptor.name for f in s.fields ]
-get_field(s::Schema, name::String) = [ f for f in s.fields if f.name == name ][1] || throw(ErrorException("Not found"))
+get_field(s::Schema, name::String) = [ f for f in s.fields if f.name == name ][1]
+get_field_index(s::Schema, name::String) = findin(s.fields, [get_field(s, name)])
 has_field(s::Schema, name::String) = length([ true for f in s.fields if f.name == name ]) > 0
 add_field(s::Schema, d::Dict) = push!(s.fields, Field(d))
 add_field(s::Schema, f::Field) = push!(s.fields, f)
-remove_field(s::Schema, name::String) = pop!(s.fields, get_field(s, name))
+remove_field(s::Schema, name::String) = deleteat!(s.fields, get_field_index(s, name))
+
 cast_row(s::Schema, row::Array{Any}) = throw(ErrorException("Not implemented"))
-# infer(s::Schema, rows::Array{Any}, headers=1) = throw(ErrorException("Not implemented"))
 commit(s::Schema, strict=nothing) = throw(ErrorException("Not implemented"))
 save(s::Schema, target::String) = throw(ErrorException("Not implemented"))
 
