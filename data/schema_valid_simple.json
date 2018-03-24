@@ -1,14 +1,14 @@
 {
     "fields": [
         {
-            "name": "id",
-            "title": "Identifier",
-            "type": "integer"
+            "name": "city",
+            "title": "City name",
+            "type": "string"
         },
         {
-            "name": "title",
-            "title": "Title",
-            "type": "string"
+            "name": "location",
+            "title": "Geocoordinate location",
+            "type": "geopoint"
         }
     ]
 }

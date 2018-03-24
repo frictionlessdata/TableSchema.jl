@@ -1,7 +1,7 @@
 @testset "Validating a Schema descriptor" begin
 
     @testset "Read in from JSON" begin
-        s = Schema("data/schema_valid_simple.json")
+        s = Schema("data/schema_valid_infer.json")
         @test length(s.fields) == 2
         @test s.fields[1].name == "id"
         @test !s.fields[2].constraints.required

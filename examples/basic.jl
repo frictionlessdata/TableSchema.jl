@@ -4,9 +4,9 @@ using TableSchema
 # Either import the functions, or use TableSchema.read(<Table>) in the code
 import TableSchema: read, is_valid, validate
 
-t = Table("../data/data_types.csv")
-tr = read(t) # 5x5 Array{Any,2}
-
+t = Table()
+source = readcsv("../data/data_types.csv")
+tr = read(t, source) # 5x5 Array{Any,2}
 println( "The length is ", length(tr[:,1]) ) # 5
 println( "Sum of column 2 is ", sum([ row[2] for row in t ]) ) # 51.0
 

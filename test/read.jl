@@ -16,7 +16,7 @@
     end
 
     @testset "Parsed from a JSON string" begin
-        s = Schema("data/schema_valid_simple.json")
+        s = Schema("data/schema_valid_infer.json")
         @test length(s.fields) == 2
         @test s.fields[1].name == "id"
         @test !s.fields[2].constraints.required
