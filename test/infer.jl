@@ -15,7 +15,7 @@ a_dict,an_array,a_geopoint,a_date,a_time
 
     @testset "A minimal Schema" begin
         t = Table(IOBuffer(TABLE_MIN))
-        tr = TableSchema.read(t)
+        tr = TableSchema.read(t, cast=false)
         s = Schema()
         TableSchema.infer(s, tr, t.headers)
         @test s.fields[1].typed == "integer"
@@ -27,7 +27,7 @@ a_dict,an_array,a_geopoint,a_date,a_time
 
     @testset "From a weird Table" begin
         t = Table(IOBuffer(TABLE_WEIRD))
-        tr = TableSchema.read(t)
+        tr = TableSchema.read(t, cast=false)
         s = Schema()
         TableSchema.infer(s, tr, t.headers)
         @test s.fields[1].typed == "object"
@@ -37,9 +37,9 @@ a_dict,an_array,a_geopoint,a_date,a_time
         @test s.fields[5].typed == "time"
     end
 
-    @testset "From a Table that doesn't meet constraints" begin
+    @testset "One that does not meet constraints" begin
         t = Table("data/data_constraints.csv")
-        tr = TableSchema.read(t)
+        tr = TableSchema.read(t, cast=false)
         s = Schema()
         TableSchema.infer(s, tr, t.headers)
         @test s.fields[1].typed == "integer"
@@ -51,7 +51,7 @@ a_dict,an_array,a_geopoint,a_date,a_time
 
     @testset "From data in a basic file" begin
         t = Table("data/data_infer.csv")
-        tr = TableSchema.read(t)
+        tr = TableSchema.read(t, cast=false)
         s = Schema()
         TableSchema.infer(s, tr, t.headers)
         @test s.fields[1].typed == "integer"
@@ -61,7 +61,7 @@ a_dict,an_array,a_geopoint,a_date,a_time
 
     @testset "From a UTF8 file" begin
         t = Table("data/data_infer_utf8.csv")
-        tr = TableSchema.read(t)
+        tr = TableSchema.read(t, cast=false)
         s = Schema()
         TableSchema.infer(s, tr, t.headers)
         @test s.fields[1].typed == "integer"
@@ -71,7 +71,7 @@ a_dict,an_array,a_geopoint,a_date,a_time
 
     @testset "From a ISO-8859-7 file" begin
         t = Table("data/data_infer_iso-8859-7.csv")
-        tr = TableSchema.read(t)
+        tr = TableSchema.read(t, cast=false)
         s = Schema()
         TableSchema.infer(s, tr, t.headers)
         @test s.fields[1].typed == "integer"
@@ -81,7 +81,7 @@ a_dict,an_array,a_geopoint,a_date,a_time
 
     @testset "From 'row limit' file" begin
         t = Table("data/data_infer_row_limit.csv")
-        tr = TableSchema.read(t)
+        tr = TableSchema.read(t, cast=false)
         s = Schema()
         TableSchema.infer(s, tr, t.headers)
         @test s.fields[1].typed == "string"

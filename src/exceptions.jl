@@ -33,3 +33,12 @@ end
 struct TableValidationException <: Exception
     var::String
 end
+
+type CastError <: Exception
+    message::String
+    errors::Array{CastError}
+
+    CastError(m::String, e::Array) = new(m, e)
+    CastError(m::String) = new(m, [])
+    CastError() = new("Cast error", [])
+end

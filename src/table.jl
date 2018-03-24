@@ -38,14 +38,31 @@ function get_headers(source::Array)
     headers, source
 end
 
-function read(t::Table, data=nothing, keyed=false, extended=false, cast=true, relations=false, limit=nothing)
-    (keyed == false && extended == false && cast == true && relations == false && limit == nothing) || throw(ErrorException("Not implemented"))
+function read(t::Table ; data=nothing, keyed=false, extended=false, cast=true, relations=false, limit=nothing)
+    (keyed == false && extended == false && relations == false && limit == nothing) || throw(ErrorException("Not implemented"))
     if data != nothing
         if typeof(data) == Array{Any, 2}
             t.headers, t.source = get_headers(data)
         else
             throw(ErrorException("Data must be a 2-dimensional array"))
         end
+    end
+    if cast
+        if !is_valid(t.schema)
+            throw(ErrorException("Schema must be valid to cast Table"))
+        end
+        newtable = Void
+        for row in t
+            newrow = cast_row(t.schema, row, false, false)
+            if newtable == Void
+                newtable = newrow
+            else
+                vcat(newtable, newrow)
+            end
+        end
+        # println(t.source, typeof(t.source))
+        t.source = newtable
+        # println(t.source, typeof(t.source))
     end
     t.source
 end
