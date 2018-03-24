@@ -137,7 +137,9 @@ function validate(s::Schema, strict::Bool=false)
     if strict && length(s.errors)>0
         throw(s.errors[1])
     end
-    return s
+
+    # TODO: find out why returning something else breaks the module
+    s
 end
 
 function guess_type(value)
