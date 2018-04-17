@@ -9,13 +9,13 @@ mutable struct Table
     schema::Schema
     errors::Array{ConstraintError}
 
-    function get_headers(source)
-        headers = [ String(s) for s in source[1,:] ]
-        source = source[2:end,:] # clear the headers
-        headers, source
-    end
     function Table(csvfilename::String, schema::Schema=Schema())
-        source = readcsv(csvfilename)
+        m = match(r"http[s]://", csvfilename)
+        if typeof(m) != Void && m.offset == 1
+            throw(ErrorException("Please use a library like Requests to download HTTP resources"))
+        else
+            source = readcsv(csvfilename)
+        end
         headers, source = get_headers(source)
         new(source, headers, schema, [])
     end
@@ -27,11 +27,44 @@ mutable struct Table
     function Table(source, headers::Array{String}, schema::Schema=Schema())
         new(source, headers, schema, [])
     end
+    function Table()
+        new(Void, [], Schema(), [])
+    end
 end
 
-function read(t::Table, keyed=false, extended=false, cast=true, relations=false, limit=nothing)
-    if typeof(t.source) == Array{Any,2}; return t.source; end
-    throw(ErrorException("Not implemented"))
+function get_headers(source::Array)
+    headers = [ String(s) for s in source[1,:] ]
+    source = source[2:end,:] # clear the headers
+    headers, source
+end
+
+function read(t::Table ; data=nothing, keyed=false, extended=false, cast=true, relations=false, limit=nothing)
+    (keyed == false && extended == false && relations == false && limit == nothing) || throw(ErrorException("Not implemented"))
+    if data != nothing
+        if typeof(data) == Array{Any, 2}
+            t.headers, t.source = get_headers(data)
+        else
+            throw(ErrorException("Data must be a 2-dimensional array"))
+        end
+    end
+    if cast
+        if !is_valid(t.schema)
+            throw(ErrorException("Schema must be valid to cast Table"))
+        end
+        newtable = Void
+        for row in t
+            newrow = cast_row(t.schema, row, false, false)
+            if newtable == Void
+                newtable = newrow
+            else
+                vcat(newtable, newrow)
+            end
+        end
+        # println(t.source, typeof(t.source))
+        t.source = newtable
+        # println(t.source, typeof(t.source))
+    end
+    t.source
 end
 function infer(t::Table, limit=100::Int16)
     t.schema && t.schema.descriptor || throw(ErrorException("Not implemented"))
@@ -43,9 +76,10 @@ end
 function validate(t::Table)
     is_empty(t.schema) &&
         throw(TableValidationException("No schema available"))
+    # TODO: should we check the schema too?
     # !valid(t.schema) &&
     #     throw(TableValidationException("Schema not valid"))
-    tr = TableSchema.read(t)
+    tr = t.source
     for fld in t.schema.fields
         ix = findin(t.headers, [fld.name])
         if length(ix) != 1

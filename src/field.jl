@@ -24,8 +24,91 @@ mutable struct Field
     Field(name::String) = Field(Dict( "name" => name ))
 end
 
-# cast_value = NullException()
-# test_value = NullException()
+OPTION_KEYS = ["decimalChar", "groupChar", "bareNumber", "trueValues", "falseValues"]
+
+_TRUE_VALUES = ["true", "True", "TRUE", "1"]
+_FALSE_VALUES = ["false", "False", "FALSE", "0"]
+_DEFAULT_BARE_NUMBER = true
+_DEFAULT_GROUP_CHAR = ""
+_DEFAULT_DECIMAL_CHAR = "."
+
+function cast_by_type(value, typed::String, format::String, options::Dict)
+    if typed == "any"
+        return value
+
+    elseif typed == "boolean"
+        isa(value, Bool) && return value
+        if !isa(value, String); return CastError(); end
+        value = strip(value)
+        value in _TRUE_VALUES && return true
+        value in _FALSE_VALUES && return false
+
+    elseif typed == "integer"
+        isa(value, Integer) && return value
+        if !isa(value, String); return CastError(); end
+        if !get(options, "bareNumber", _DEFAULT_BARE_NUMBER)
+            value = replace(value, r"((^\D*)|(\D*$))", "")
+        end
+        try; return parse(Int64, value); catch; return CastError(); end
+
+    elseif typed == "number"
+        isa(value, AbstractFloat) && return value
+        isa(value, Integer) && return Float64(value)
+        if !isa(value, String); return CastError(); end
+        group_char = get(options, "groupChar", _DEFAULT_GROUP_CHAR)
+        decimal_char = get(options, "decimalChar", _DEFAULT_DECIMAL_CHAR)
+        value = replace(value, r"\s", "")
+        value = replace(value, decimal_char, ".")
+        value = replace(value, group_char, "")
+        if !get(options, "bareNumber", _DEFAULT_BARE_NUMBER)
+            value = replace(value, r"((^\D*)|(\D*$))", "")
+        end
+        try; return parse(Float64, value); catch; return CastError(); end
+
+    elseif typed == "object"
+        typeof(value) == Dict && return value
+        if !isa(value, String); return CastError(); end
+        try; value = JSON.parse(value); catch; return CastError(); end
+        isa(value, Dict) && return value
+
+    elseif typed == "string"
+        isa(value, AbstractString) && return value
+        isa(value, Number) && return repr(value)
+        try; return parse(String, value); catch; return CastError(); end
+
+    else
+        throw(ErrorException("Cast by type $typed not implemented"))
+
+    end
+    CastError()
+end
+
+function cast_value(f::Field, value, constraints=true)
+
+    # TODO: Ignore Missing values
+    cast_value = value
+    if !isempty(value)
+
+        # Collect options
+        d = f.descriptor
+        options = Dict(k => d[k] for k in OPTION_KEYS if haskey(d, k) && !isempty(d[k]))
+        cast_value = cast_by_type(value, f.typed, f.format, options)
+        if isa(cast_value, CastError)
+            throw(CastError(
+                "Field $(f.name) cannot cast value \"$(value)\" for type $(f.typed) with format $(f.format)"
+            ))
+        end
+
+    end
+
+    if constraints
+        throw(ErrorException("Not implemented"))
+    end
+
+    cast_value
+end
+
+# test_value = throw(ErrorException("Not implemented"))
 
 function validate(f::Field)
     isempty(f.descriptor) &&

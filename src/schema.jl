@@ -137,7 +137,9 @@ function validate(s::Schema, strict::Bool=false)
     if strict && length(s.errors)>0
         throw(s.errors[1])
     end
-    return s
+
+    # TODO: find out why returning something else breaks the module
+    s
 end
 
 function guess_type(value)
@@ -253,6 +255,33 @@ function set_foreign_key(s::Schema, source_fields::Array{String}, resource::Stri
     )
 end
 
+function cast_row(s::Schema, row::Array, fail_fast=false, check_constraints=true)
+    result = []; errors = []
+
+    lrow = length(row); lsf = length(s.fields)
+    (lrow != lsf) && throw(CastError(
+        "Row length $lrow does not match fields count $lsf"))
+
+    for (i, field) in enumerate(s.fields)
+        value = row[i]
+        try
+            push!(result, cast_value(field, value, check_constraints))
+        catch e
+            if isa(e, CastError) && !fail_fast
+                push!(errors, e)
+            else
+                throw(e)
+            end
+        end
+    end
+
+    le = length(errors)
+    (le>0) && throw(CastError(
+        "There are $le cast errors (see exception.errors)", errors))
+
+    result
+end
+
 field_names(s::Schema) = [ f.descriptor.name for f in s.fields ]
 get_field(s::Schema, name::String) = [ f for f in s.fields if f.name == name ][1]
 get_field_index(s::Schema, name::String) = findin(s.fields, [get_field(s, name)])
@@ -261,9 +290,8 @@ add_field(s::Schema, d::Dict) = push!(s.fields, Field(d))
 add_field(s::Schema, f::Field) = push!(s.fields, f)
 remove_field(s::Schema, name::String) = deleteat!(s.fields, get_field_index(s, name))
 
-cast_row(s::Schema, row::Array{Any}) = throw(ErrorException("Not implemented"))
 commit(s::Schema, strict=nothing) = throw(ErrorException("Not implemented"))
 save(s::Schema, target::String) = throw(ErrorException("Not implemented"))
 
 is_empty(s::Schema) = Base.isempty(s.fields)
-is_valid(s::Schema) = (length(s.errors) == 0)
+is_valid(s::Schema) = (!Base.isempty(s.descriptor) && length(s.errors) == 0)

@@ -7,8 +7,6 @@ module TableSchema
 export Table
 export Schema
 export Field
-export validate
-# export infer
 
 export TableValidationException
 export ConstraintError
@@ -18,7 +16,6 @@ using Base.Iterators: filter
 using Base.Iterators: Repeated, repeated
 
 using JSON
-# using CSV
 
 DEFAULT_TYPE = "string"
 DEFAULT_FORMAT = "default"
