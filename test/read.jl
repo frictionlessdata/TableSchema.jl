@@ -20,6 +20,15 @@ TABLE_CAST = """id,height,age,name,occupation
         @test_throws TableValidationException validate(t)
     end
 
+    @testset "Passing an IO buffered file" begin
+        t = Table()
+        t.schema = Schema("data/schema_valid_missing.json")
+        @test TableSchema.is_valid(t.schema)
+        f = readcsv("data/data_types.csv")
+        tr = TableSchema.read(t, data=f)
+        @test validate(t)
+    end
+
     @testset "With schema validation" begin
         s = Schema("data/schema_valid_missing.json")
         t = Table("data/data_types.csv", s)
