@@ -42,8 +42,15 @@ mutable struct Schema
         validate(s, strict)
     end
 
-    Schema(filename::String, strict::Bool=false) =
-        Schema(JSON.parsefile(filename), strict)
+    function Schema(filename::String, strict::Bool=false)
+        if match(r"^https?://", filename) !== nothing
+            req = request("GET", filename)
+            jsondata = JSON.parse(req.body)
+        else
+            jsondata = JSON.parsefile(filename)
+        end
+        Schema(jsondata, strict)
+    end
 
     Schema(strict::Bool=false) =
         Schema(Dict(), strict)
