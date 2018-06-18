@@ -7,7 +7,7 @@ import HTTP: request
 # Either import the functions, or use TableSchema.read(<Table>) in the code
 import TableSchema: read, is_valid, validate
 
-REMOTE_URL = "https://raw.githubusercontent.com/frictionlessdata/tableschema-jl/master/data/data.csv"
+REMOTE_URL = "https://raw.githubusercontent.com/frictionlessdata/tableschema-jl/master/data/data_simple.csv"
 
 println( "Fetching remote data ..." )
 t = Table()
