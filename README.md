@@ -23,19 +23,20 @@ A library for working with [Table Schema](http://specs.frictionlessdata.io/table
 
 :construction: This package is pre-release and under heavy development. Please see [DESIGN.md](DESIGN.md) for a detailed overview of our goals, and visit the [issues page](https://github.com/frictionlessdata/tableschema-jl/issues) to contribute and make suggestions. For questions that need to a real time response, reach out via [Gitter](https://gitter.im/frictionlessdata/chat). Thanks! :construction:
 
-# Usage
-
 We aim to make this library compatible with all widely used approaches to work with tabular data in Julia.
 
 Please visit [our wiki](https://github.com/frictionlessdata/datapackage-jl/wiki) for a list of related projects that we are tracking, and contibute use cases there or as enhancement [issues](https://github.com/frictionlessdata/tableschema-jl/issues).
+
+# Usage
 
 See `examples` folder and unit tests in [runtests.jl](test/runtests.jl) for current usage.
 
 ## Table
 
 ```Julia
-filestream = os.open("cities.csv")
-table = Table(filestream)
+using TableSchema
+
+table = Table("cities.csv")
 table.headers
 # ['city', 'location']
 table.read(keyed=True)
@@ -57,10 +58,7 @@ err = table.errors # handle errors
 ## Schema
 
 ```Julia
-using TableSchema
-
-filestream = os.open("schema.json")
-schema = Schema(filestream)
+schema = Schema("schema.json")
 schema.fields
 # <Field1, Field2...>
 err = schema.errors # handle errors
@@ -80,7 +78,7 @@ add_field(schema, field)
 
 ## Installation
 
-:construction: Work In Progress. The following documentation is relevant only after package release.
+:construction: Work In Progress. The following documentation is relevant only after package release. In the interim, please see [datapackage-jl](https://github.com/frictionlessdata/datapackage-jl)
 
 The package use semantic versioning, meaning that major versions could include breaking changes. It is highly recommended to specify a version range in your `REQUIRE` file e.g.:
 
