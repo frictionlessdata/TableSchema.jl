@@ -7,7 +7,7 @@ Last updated: *November 20, 2017*
 
 [Frictionless Data](http://frictionlessdata.io/) is a set of lightweight specifications, libraries and software improving the ways to get, share, and validate data.
 
-This design document focuses on functional specification and design of two code libraries written in [Julia](https://julialang.org/): "Table Schema" and "Data Package". The design follows the general design principles described at [specs.frictionlessdata.io](https://specs.frictionlessdata.io) and the V1 announcement ([blog.okfn.org](https://blog.okfn.org/2017/09/05/frictionless-data-v1-0/), [hackmd.io](https://hackmd.io/KwUzE5wIwRgWgGYENzDgFmAgzHKA2fJOABmHwGMATEmK8GIoA===)).
+This design document focuses on functional specification and design of two code libraries written in [Julia](https://julialang.org/): "Table Schema" and "Data Package". The design follows the general design prbinciples described at [specs.frictionlessdata.io](https://specs.frictionlessdata.io) and the V1 announcement ([blog.okfn.org](https://blog.okfn.org/2017/09/05/frictionless-data-v1-0/), [hackmd.io](https://hackmd.io/KwUzE5wIwRgWgGYENzDgFmAgzHKA2fJOABmHwGMATEmK8GIoA===)).
 
 ## Functional Specification
 
