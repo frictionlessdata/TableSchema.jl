@@ -16,6 +16,7 @@ using Base.Iterators: filter
 using Base.Iterators: Repeated, repeated
 
 using JSON
+import HTTP: request
 
 DEFAULT_TYPE = "string"
 DEFAULT_FORMAT = "default"

@@ -43,10 +43,19 @@ mutable struct Schema
     end
 
     Schema(filename::String, strict::Bool=false) =
-        Schema(JSON.parsefile(filename), strict)
+        Schema(fetch_json(filename), strict)
 
     Schema(strict::Bool=false) =
         Schema(Dict(), strict)
+end
+
+function fetch_json(filename::String)
+    if match(r"^https?://", filename) !== nothing
+        req = request("GET", filename)
+        JSON.parse(req.body)
+    else
+        JSON.parsefile(filename)
+    end
 end
 
 function validate(s::Schema, strict::Bool=false)

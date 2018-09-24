@@ -10,9 +10,8 @@ mutable struct Table
     errors::Array{ConstraintError}
 
     function Table(csvfilename::String, schema::Schema=Schema())
-        m = match(r"http[s]://", csvfilename)
-        if typeof(m) != Void && m.offset == 1
-            throw(ErrorException("Please use a library like Requests to download HTTP resources"))
+        if match(r"^https?://", csvfilename) !== nothing
+            source = read_remote_csv(csvfilename)
         else
             source = readcsv(csvfilename)
         end
@@ -30,6 +29,11 @@ mutable struct Table
     function Table()
         new(Void, [], Schema(), [])
     end
+end
+
+function read_remote_csv(url::String)
+    req = request("GET", url)
+    data = readcsv(req.body)
 end
 
 function get_headers(source::Array)
