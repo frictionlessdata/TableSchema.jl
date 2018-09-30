@@ -2,7 +2,6 @@
 Table Schema generic data structure
 https://github.com/frictionlessdata/tableschema-jl#table
 """
-
 mutable struct Table
     source
     headers::Array{String}
@@ -89,7 +88,7 @@ function validate(t::Table)
     #     throw(TableValidationException("Schema not valid"))
     tr = t.source
     for fld in t.schema.fields
-        ix = findin(t.headers, [fld.name])
+        ix = findall(in([fld.name]), t.headers)
         if length(ix) != 1
             # TODO: shouldn't this just cause a ConstraintError?
             throw(TableValidationException(string("Missing field defined in Schema: ", fld.name)))

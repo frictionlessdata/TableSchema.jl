@@ -2,7 +2,6 @@
 Table Schema field
 https://github.com/frictionlessdata/tableschema-jl#field
 """
-
 mutable struct Field
     descriptor::Dict
     name::String

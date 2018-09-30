@@ -2,7 +2,6 @@
 Table Schema field constraints
 https://github.com/frictionlessdata/tableschema-jl#constraints
 """
-
 mutable struct Constraints
     required::Bool
     unique::Bool

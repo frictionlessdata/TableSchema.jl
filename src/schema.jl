@@ -2,9 +2,6 @@
 Table Schema main type
 https://github.com/frictionlessdata/tableschema-jl#schema
 """
-
-const MAX_ROWS_INFER = 100
-
 mutable struct Schema
     errors::Array{SchemaError}
     descriptor::Dict
@@ -87,7 +84,7 @@ function validate(s::Schema, strict::Bool=false)
     end
     for e in s.errors
         if occursin(e.message, "primaryKey") && e.key != ""
-            deleteat!(s.primary_key, findin(s.primary_key, [e.key]))
+            deleteat!(s.primary_key, findall(in([e.key]), s.primary_key))
         end
     end
 
@@ -134,10 +131,12 @@ function validate(s::Schema, strict::Bool=false)
         # Handle errors
         for e in s.errors
             if occursin(e.message, "foreignKeys fields") && e.key != ""
-                deleteat!(key["fields"], findin(key["fields"], [e.key]))
+                deleteat!(key["fields"],
+                    findall(in([e.key]), key["fields"]))
             end
             if occursin(e.message, "foreignKeys references") && e.key != ""
-                deleteat!(key["reference"]["fields"], findin(key["reference"]["fields"], [e.key]))
+                deleteat!(key["reference"]["fields"],
+                    findall(in([e.key]), key["reference"]["fields"]))
             end
         end
     end
@@ -183,8 +182,8 @@ function guess_type(value)
         gp = split(value, ",")
         if length(gp) == 2
             try
-                lon = float(gp[1])
-                lat = float(gp[2])
+                lon = parse(Float64, gp[1])
+                lat = parse(Float64, gp[2])
                 if lon <= 180 && lon >= -180 &&
                     lat <= 90 && lat >= -90
                         return "geopoint"
@@ -303,7 +302,7 @@ end
 
 field_names(s::Schema) = [ f.descriptor.name for f in s.fields ]
 get_field(s::Schema, name::String) = [ f for f in s.fields if f.name == name ][1]
-get_field_index(s::Schema, name::String) = findin(s.fields, [get_field(s, name)])
+get_field_index(s::Schema, name::String) = findall(in([get_field(s, name)]), s.fields)
 has_field(s::Schema, name::String) = length([ true for f in s.fields if f.name == name ]) > 0
 add_field(s::Schema, d::Dict) = push!(s.fields, Field(d))
 add_field(s::Schema, f::Field) = push!(s.fields, f)

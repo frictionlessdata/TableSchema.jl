@@ -16,8 +16,7 @@ TABLE_CAST = """id,height,age,name,occupation
         # check the bottom left index
         @test trs[5,1] == 5
         # iterate over the rows
-        @warn "Test skipped - see examples/bug-test-read.jl"
-        #@test sum([ row[HEIGHT_COLUMN] for row in t ]) == 51
+        @test sum([ row[HEIGHT_COLUMN] for row in t ]) == 51
         # no schema, hence exception
         @test_throws TableValidationException validate(t)
     end

@@ -21,8 +21,9 @@ using Dates
 import HTTP: request
 import DelimitedFiles: readdlm
 
-DEFAULT_TYPE = "string"
-DEFAULT_FORMAT = "default"
+const DEFAULT_TYPE = "string"
+const DEFAULT_FORMAT = "default"
+const MAX_ROWS_INFER = 100
 
 include("constraints.jl")
 include("field.jl")
