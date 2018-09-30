@@ -13,13 +13,13 @@ mutable struct Table
         if match(r"^https?://", csvfilename) !== nothing
             source = read_remote_csv(csvfilename)
         else
-            source = readcsv(csvfilename)
+            source = readdlm(csvfilename, ',')
         end
         headers, source = get_headers(source)
         new(source, headers, schema, [])
     end
-    function Table(csvdata::Base.AbstractIOBuffer, schema::Schema=Schema())
-        source = readcsv(csvdata)
+    function Table(csvdata::Base.GenericIOBuffer, schema::Schema=Schema())
+        source = readdlm(csvdata, ',')
         headers, source = get_headers(source)
         new(source, headers, schema, [])
     end
@@ -27,13 +27,13 @@ mutable struct Table
         new(source, headers, schema, [])
     end
     function Table()
-        new(Void, [], Schema(), [])
+        new(Nothing, [], Schema(), [])
     end
 end
 
 function read_remote_csv(url::String)
     req = request("GET", url)
-    data = readcsv(req.body)
+    data = readdlm(req.body, ',')
 end
 
 function get_headers(source::Array)
@@ -55,10 +55,10 @@ function read(t::Table ; data=nothing, keyed=false, extended=false, cast=true, r
         if !is_valid(t.schema)
             throw(ErrorException("Schema must be valid to cast Table"))
         end
-        newtable = Void
+        newtable = Nothing
         for row in t
             newrow = cast_row(t.schema, row, false, false)
-            if newtable == Void
+            if newtable == Nothing
                 newtable = newrow
             else
                 vcat(newtable, newrow)
@@ -110,7 +110,15 @@ function validate(t::Table)
     return length(t.errors) == 0
 end
 
-Base.length(t::Table) = size(t.source, 1)
-Base.start(t::Table) = 1
-Base.done(t::Table, i) = i > size(t.source, 1)
-Base.next(t::Table, i) = t.source[i,:], i+1
+Base.length(iter::Table) = size(iter.source, 1)
+Base.eltype(iter::Table) = Table
+function Base.iterate(iter::Table, state=(1, 0))
+    element, count = state
+    if count > size(iter.source, 1)
+        return nothing
+    end
+    return (element, (element.source[count,:], count + 1))
+end
+# Base.start(t::Table) = 1
+# Base.done(t::Table, i) = i > size(t.source, 1)
+# Base.next(t::Table, i) = t.source[i,:], i+1

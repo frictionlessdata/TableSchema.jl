@@ -86,7 +86,7 @@ function validate(s::Schema, strict::Bool=false)
         end
     end
     for e in s.errors
-        if contains(e.message, "primaryKey") && e.key != ""
+        if occursin(e.message, "primaryKey") && e.key != ""
             deleteat!(s.primary_key, findin(s.primary_key, [e.key]))
         end
     end
@@ -133,10 +133,10 @@ function validate(s::Schema, strict::Bool=false)
         end
         # Handle errors
         for e in s.errors
-            if contains(e.message, "foreignKeys fields") && e.key != ""
+            if occursin(e.message, "foreignKeys fields") && e.key != ""
                 deleteat!(key["fields"], findin(key["fields"], [e.key]))
             end
-            if contains(e.message, "foreignKeys references") && e.key != ""
+            if occursin(e.message, "foreignKeys references") && e.key != ""
                 deleteat!(key["reference"]["fields"], findin(key["reference"]["fields"], [e.key]))
             end
         end
@@ -163,16 +163,22 @@ function guess_type(value)
             df = DateFormat("YYYY-MM-DDThh:mm:ssZ")
             dd = DateTime(value, df)
             return "datetime"
+        finally
+            # continue
         end
         try
             df = DateFormat("HH:MM:SS")
             dd = DateTime(value, df)
             return "time"
+        finally
+            # continue
         end
         try
             df = DateFormat("y-m-d")
             dd = Date(value, df)
             return "date"
+        finally
+            # continue
         end
         gp = split(value, ",")
         if length(gp) == 2
@@ -183,6 +189,8 @@ function guess_type(value)
                     lat <= 90 && lat >= -90
                         return "geopoint"
                 end
+            finally
+                # continue
             end
         end
         try
@@ -192,6 +200,8 @@ function guess_type(value)
             elseif isa(obj, Dict)
                 return "object"
             end
+        finally
+            # continue
         end
         return "string"
     else
@@ -212,13 +222,13 @@ function infer(s::Schema, rows::Array{Any}, headers::Array{String}, maxrows=MAX_
         for (r, val) in enumerate(col[1:maxrows])
             guess = guess_type(val)
             if guess == nothing
-                @printf("Could not guess type at (%d, %d)\n", r, c)
+                @warn "Could not guess type at ($(r), $(c))"
             else
                 if !haskey(type_match, guess)
                     type_match[guess] = 0
                 end
                 type_match[guess] = type_match[guess] + 1
-                # @printf("Guessed %s at (%d, %d)\n", guess, r, c)
+                @info "Guessed $(guess) at ($(r), $(c))"
             end
             # print(val)
             # print("\n")

@@ -15,7 +15,7 @@ struct ConstraintError <: Exception
     ConstraintError(m::String, v) = new(m, nothing, v, nothing)
 end
 
-type FieldError <: Exception
+struct FieldError <: Exception
     message::String
     # key::String
     # line::Int16
@@ -34,7 +34,7 @@ struct TableValidationException <: Exception
     var::String
 end
 
-type CastError <: Exception
+struct CastError <: Exception
     message::String
     errors::Array{CastError}
 

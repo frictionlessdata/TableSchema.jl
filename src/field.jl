@@ -47,7 +47,7 @@ function cast_by_type(value, typed::String, format::String, options::Dict)
         isa(value, Integer) && return value
         if !isa(value, String); return CastError(); end
         if !get(options, "bareNumber", _DEFAULT_BARE_NUMBER)
-            value = replace(value, r"((^\D*)|(\D*$))", "")
+            value = replace(value, r"((^\D*)|(\D*$))" => "")
         end
         try; return parse(Int64, value); catch; return CastError(); end
 
@@ -57,11 +57,11 @@ function cast_by_type(value, typed::String, format::String, options::Dict)
         if !isa(value, String); return CastError(); end
         group_char = get(options, "groupChar", _DEFAULT_GROUP_CHAR)
         decimal_char = get(options, "decimalChar", _DEFAULT_DECIMAL_CHAR)
-        value = replace(value, r"\s", "")
-        value = replace(value, decimal_char, ".")
-        value = replace(value, group_char, "")
+        value = replace(value, r"\s" => "")
+        value = replace(value, decimal_char => ".")
+        value = replace(value, group_char => "")
         if !get(options, "bareNumber", _DEFAULT_BARE_NUMBER)
-            value = replace(value, r"((^\D*)|(\D*$))", "")
+            value = replace(value, r"((^\D*)|(\D*$))" => "")
         end
         try; return parse(Float64, value); catch; return CastError(); end
 

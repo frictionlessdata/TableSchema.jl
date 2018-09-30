@@ -86,19 +86,25 @@ The package use semantic versioning, meaning that major versions could include b
 v"1.0-" <= TableSchema < v"2.0-"
 ```
 
-At the Julia REPL, install the package as usual with:
+At the Julia REPL, install the package with:
 
-```Julia
-Pkg.add("TableSchema")
-```
-
-Code examples here require Julia 0.6+.
+`(v1.0) pkg> add "https://github.com/loleg/TableSchema.jl"`
 
 ## Development
 
-Clone this repository, then see the *test* folder for test sources and mock data.
+Code examples here require Julia 0.6+. We are now migrating to Julia 1.0. See [Pkg documentation](https://docs.julialang.org/en/v1.0.0/stdlib/Pkg/#Creating-your-own-packages-1) for further instructions.
 
-From your console, you can run the unit tests with:
+Clone this repository, enter the REPL (press `]` at the Julia prompt) to activate and test it using:
+
+```
+cd <path-to-my-folder>/TableSchema.jl
+julia
+# Press ]
+(v1.0) pkg> activate .
+(TableSchema) pkg> test
+```
+
+From your console, you can also run the unit tests with:
 
 `julia -L src/TableSchema.jl test/runtests.jl`
 

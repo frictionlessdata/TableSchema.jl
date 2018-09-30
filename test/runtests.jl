@@ -1,7 +1,9 @@
 using TableSchema
-using Base.Test
+using Test
 
 import TableSchema: read, validate, infer, save
+
+import DelimitedFiles: readdlm
 
 include("schema.jl")
 include("read.jl")
