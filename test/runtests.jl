@@ -1,5 +1,6 @@
 using TableSchema
 using Test
+using Dates
 
 import TableSchema: read, validate, infer, save
 

@@ -161,23 +161,23 @@ function guess_type(value)
     elseif isa(value, AbstractString)
         try
             df = DateFormat("YYYY-MM-DDThh:mm:ssZ")
-            dd = DateTime(value, df)
+            dd = Date(value, df)
             return "datetime"
-        finally
+        catch
             # continue
         end
         try
             df = DateFormat("HH:MM:SS")
-            dd = DateTime(value, df)
+            dd = Date(value, df)
             return "time"
-        finally
+        catch
             # continue
         end
         try
             df = DateFormat("y-m-d")
             dd = Date(value, df)
             return "date"
-        finally
+        catch
             # continue
         end
         gp = split(value, ",")
@@ -189,7 +189,7 @@ function guess_type(value)
                     lat <= 90 && lat >= -90
                         return "geopoint"
                 end
-            finally
+            catch
                 # continue
             end
         end
@@ -200,7 +200,7 @@ function guess_type(value)
             elseif isa(obj, Dict)
                 return "object"
             end
-        finally
+        catch
             # continue
         end
         return "string"
@@ -228,7 +228,7 @@ function infer(s::Schema, rows::Array{Any}, headers::Array{String}, maxrows=MAX_
                     type_match[guess] = 0
                 end
                 type_match[guess] = type_match[guess] + 1
-                @info "Guessed $(guess) at ($(r), $(c))"
+                @debug "Guessed $(guess) at ($(r), $(c))"
             end
             # print(val)
             # print("\n")
