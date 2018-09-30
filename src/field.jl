@@ -82,6 +82,16 @@ function cast_by_type(value, typed::String, format::String, options::Dict)
     CastError()
 end
 
+function build(f::Field)
+    d = Dict()
+    d["name"] = f.name
+    d["type"] = f.typed
+    d["format"] = f.format
+    d["constraints"] = build(f.constraints)
+    f.descriptor = d
+    d
+end
+
 function cast_value(f::Field, value, constraints=true)
 
     # TODO: Ignore Missing values

@@ -300,6 +300,37 @@ function cast_row(s::Schema, row::Array, fail_fast=false, check_constraints=true
     result
 end
 
+function build(s::Schema)
+    d = Dict()
+    d["fields"] = [ build(f) for f in s.fields ]
+    d["primaryKey"] = s.primary_key
+    d["foreignKeys"] = s.foreign_keys
+    d["missingValues"] = s.missing_values
+    s.descriptor = d
+    d
+end
+
+function commit(s::Schema ; strict=nothing)
+    strict !== nothing &&
+        throw(ErrorException("strict parameter not implemented"))
+    @debug "Building schema descriptor"
+    s.descriptor = build(s)
+    s.errors = []
+    validate(s)
+    length(s.errors) > 0 &&
+        throw(ErrorException("Invalid schema: check errors"))
+    true
+end
+
+function save(s::Schema, target::String)
+    commit(s)
+	indent = 4
+	@debug "Saving table schema to $target"
+	open(target, "w") do io
+		JSON.print(io, s.descriptor, indent)
+	end
+end
+
 field_names(s::Schema) = [ f.descriptor.name for f in s.fields ]
 get_field(s::Schema, name::String) = [ f for f in s.fields if f.name == name ][1]
 get_field_index(s::Schema, name::String) = findall(in([get_field(s, name)]), s.fields)
@@ -307,9 +338,6 @@ has_field(s::Schema, name::String) = length([ true for f in s.fields if f.name =
 add_field(s::Schema, d::Dict) = push!(s.fields, Field(d))
 add_field(s::Schema, f::Field) = push!(s.fields, f)
 remove_field(s::Schema, name::String) = deleteat!(s.fields, get_field_index(s, name))
-
-commit(s::Schema, strict=nothing) = throw(ErrorException("Not implemented"))
-save(s::Schema, target::String) = throw(ErrorException("Not implemented"))
 
 is_empty(s::Schema) = Base.isempty(s.fields)
 is_valid(s::Schema) = (!Base.isempty(s.descriptor) && length(s.errors) == 0)

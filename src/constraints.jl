@@ -36,3 +36,11 @@ mutable struct Constraints
     Constraints(required::Bool, unique::Bool) = new(required, unique, nothing, nothing)
     Constraints() = Constraints(Dict())
 end
+
+function build(c::Constraints)
+    d = Dict()
+    for fld in fieldnames(typeof(c))
+        d[fld] = getfield(c, fld)
+    end
+    d
+end

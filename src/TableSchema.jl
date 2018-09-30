@@ -19,7 +19,7 @@ using JSON
 using Dates
 
 import HTTP: request
-import DelimitedFiles: readdlm
+import DelimitedFiles: readdlm, writedlm
 
 const DEFAULT_TYPE = "string"
 const DEFAULT_FORMAT = "default"

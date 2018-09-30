@@ -1,57 +1,42 @@
-@testset "Edit a descriptor" begin
+TABLE_MIN = """id,height,age,name,occupation
+1,10.0,1,string1,2012-06-15 00:00:00
+2,10.1,2,string2,2013-06-15 01:00:00
+3,10.2,3,string3,2014-06-15 02:00:00
+4,10.3,4,string4,2015-06-15 03:00:00
+5,10.4,5,string4,2016-06-15 04:00:00
+"""
 
-    f1 = Field("width")
-    f1.typed = "integer"
-    f1.constraints.required = true
-    f2 = Field("name")
-    f2.typed = "string"
-    f2.constraints.required = false
+@testset "Saving schema and data" begin
 
-    @testset "Create and set field properties" begin
-        s = Schema()
-        TableSchema.add_field(s, f1)
-        TableSchema.add_field(s, f2)
-        @test length(s.fields) == 2
-        @test s.fields[1].constraints.required
-        @test !s.fields[2].constraints.required
+    tempfile_schema = tempname()
+    tempfile_data = tempname()
+    @debug "Saving schema to $tempfile_schema"
+    @debug "Saving data to $tempfile_data"
+
+    @testset "Save schema to a target file" begin
+        t = Table(IOBuffer(TABLE_MIN))
+        infer(t)
+        save(t.schema, tempfile_schema)
+        s = Schema(tempfile_schema)
+        @test TableSchema.is_valid(s) == true
     end
 
-    @testset "Modify primary and foreign keys" begin
-        s = Schema("../data/schema_valid_full.json")
-        @test length(s.primary_key) == 4
-        @test_throws SchemaError TableSchema.set_primary_key(s, "invalid")
-        TableSchema.set_primary_key(s, "home_location")
-        @test length(s.primary_key) == 4
-        TableSchema.set_primary_key(s, "gender")
-        @test length(s.primary_key) == 5
-        TableSchema.set_foreign_key(s, ["home_location"], "country", ["name"])
-        @test length(s.foreign_keys) == 2
-        @test_throws SchemaError TableSchema.set_foreign_key(s, ["invalid"], "", ["name"])
+    @testset "Read schema back in and validate" begin
+        s = Schema(tempfile_schema)
+        @test TableSchema.is_valid(s) == true
+        t = Table(IOBuffer(TABLE_MIN), s)
+        @test validate(t)
     end
 
-    @testset "Validate changes to the descriptor" begin
-        s = Schema("../data/schema_valid_full.json")
-        validate(s, true)
-        @test TableSchema.is_valid(s)
-        TableSchema.remove_field(s, "position_title")
-        TableSchema.remove_field(s, "first_name")
-        @test_throws SchemaError validate(s, true)
-    end
-
-end
-
-@testset "Saving a Table" begin
-
-    @testset "Casting a schema row" begin
-        # TODO: not implemented
-    end
-
-    @testset "Commit a schema" begin
-        # TODO: not implemented
-    end
-
-    @testset "Save to a target file" begin
-        # TODO: not implemented
+    @testset "Save and reopen table data" begin
+        t = Table(IOBuffer(TABLE_MIN))
+        infer(t)
+        save(t, tempfile_data)
+        save(t.schema, tempfile_schema)
+        # Reload data and check the schema
+        s = Schema(tempfile_schema)
+        t2 = Table(tempfile_data, s)
+        @test validate(t2)
     end
 
 end

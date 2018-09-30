@@ -73,6 +73,7 @@ function read(t::Table ; data=nothing, keyed=false, extended=false, cast=true, r
     end
     t.source
 end
+
 function infer(t::Table ; limit::Int64=-1)
 	# what
 	limit !== -1 && throw(ErrorException("limit parameter not implemented"))
@@ -80,8 +81,19 @@ function infer(t::Table ; limit::Int64=-1)
 	t.schema = Schema()
 	infer(t.schema, tr, t.headers)
 end
+
 function save(t::Table, target::String)
-    throw(ErrorException("Not implemented"))
+	# TODO: should we check the schema too?
+	# !valid(t.schema) &&
+    #     throw(TableValidationException("Schema not valid"))
+	@debug "Building table data"
+	headers = reshape(t.headers, 1, length(t.headers))
+	tabledata = vcat(headers, t.source)
+	@debug "Saving table data to $target"
+	delim = ','
+	open(target, "w") do io
+		writedlm(io, tabledata, delim)
+	end
 end
 
 function validate(t::Table)
