@@ -85,8 +85,8 @@ end
 - At least, finish the basic implementation level. Interfaces are [described here](https://github.com/frictionlessdata/implementations#interface).
 - Must follow OKI [coding standards](https://github.com/okfn/coding-standards).
 - Development process is [described here](https://github.com/frictionlessdata/implementations#development-process).
-- For code [style and linting](https://github.com/okfn/coding-standards#style-and-linting), we are going to use the Julia [Style Guide](https://docs.julialang.org/en/release-0.6/manual/style-guide/), and the [Lint.jl](https://github.com/tonyhffong/Lint.jl) tool for static analysis.
-- The code will be written and tested in [Julia 0.6](https://docs.julialang.org/en/release-0.6/index.html), the latest stable release of which is 0.6.1 as per November 2017.
-- We will use Julia's standard [user manual](https://docs.julialang.org/en/release-0.6/index.html) as documentation, which can be [locally generated](https://github.com/JuliaLang/julia/tree/master/doc)  using [Documenter.jl](https://github.com/JuliaDocs/Documenter.jl).
+- For code [style and linting](https://github.com/okfn/coding-standards#style-and-linting), we are going to use the Julia [Style Guide](https://docs.julialang.org/en/v1/manual/style-guide/), and the [Lint.jl](https://github.com/tonyhffong/Lint.jl) tool for static analysis.
+- The code will be written and tested in [Julia 1.0](https://docs.julialang.org/en/v1/), the latest stable release of which is 1.0.0 as of September 2018.
+- We will use Julia's standard [user manual](https://docs.julialang.org/en/v1/manual) as documentation, which can be [locally generated](https://github.com/JuliaLang/julia/tree/master/doc)  using [Documenter.jl](https://github.com/JuliaDocs/Documenter.jl).
 - The library documentation must be searchable at https://pkg.julialang.org
-- Unit and integration tests are going to be done using facilities of the Julia [Standard Library](https://docs.julialang.org/en/release-0.6/stdlib/test/)
+- Unit and integration tests are going to be done using facilities of the Julia [Standard Library](https://docs.julialang.org/en/v1/stdlib/Test/)
