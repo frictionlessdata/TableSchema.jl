@@ -38,8 +38,7 @@ end
 
 function get_headers(source::Array)
     headers = [ String(s) for s in source[1,:] ]
-    source = source[2:end,:] # clear the headers
-    headers, source
+    headers, source[2:end,:] # clear the headers
 end
 
 function read(t::Table ; data=nothing, keyed=false, extended=false, cast=true, relations=false, limit=nothing)
@@ -55,18 +54,23 @@ function read(t::Table ; data=nothing, keyed=false, extended=false, cast=true, r
         if !is_valid(t.schema)
             throw(ErrorException("Schema must be valid to cast Table"))
         end
+        if t.source == nothing
+            throw(ErrorException("Data must be available to cast Table"))
+        end
         newtable = Nothing
+		# Iterate table rows
         for row in t
+			# Apply cast to the row's values
             newrow = cast_row(t.schema, row, false, false)
+			# Reshape back into a non-elemental array
+			newrow = reshape(newrow, 1, length(newrow))
             if newtable == Nothing
                 newtable = newrow
             else
-                vcat(newtable, newrow)
+                newtable = vcat(newtable, newrow)
             end
         end
-        # println(t.source, typeof(t.source))
         t.source = newtable
-        # println(t.source, typeof(t.source))
     end
     t.source
 end
@@ -110,10 +114,11 @@ function validate(t::Table)
     return length(t.errors) == 0
 end
 
-Base.length(it::Table) = size(it.source, 1)
 Base.eltype(it::Table) = Table
-function Base.iterate(it::Table, (el, i)=(it.source[1,:], 1))
-	return i >= length(it) ? nothing : (el, (it.source[i + 1,:], i + 1))
+Base.length(it::Table) = size(it.source, 1)
+function Base.iterate(it::Table, (el, i)=(nothing, 1))
+    if i > length(it); return nothing; end
+    return (it.source[i,:], (nothing, i + 1))
 end
 
 # Base.start(t::Table) = 1

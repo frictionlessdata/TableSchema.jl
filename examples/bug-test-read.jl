@@ -1,6 +1,5 @@
-#
 # Exploration of an apparent bug in array iteration
-#
+# https://discourse.julialang.org/t/last-row-is-broken-when-iterating-an-array/15696
 
 using DelimitedFiles
 
@@ -9,13 +8,15 @@ mutable struct mytbl
     function mytbl(csvdata::Base.GenericIOBuffer)
         source = readdlm(csvdata, ',')
         source = convert(Array, source[2:end,:]) # clear the headers
+        source = reshape(source, size(source, 1), size(source, 2))
         new(source)
     end
 end
 
 Base.length(it::mytbl) = size(it.source, 1)
-function Base.iterate(it::mytbl, (el, i)=(it.source[1,:], 1))
-   return i >= length(it) ? nothing : (el, (it.source[i + 1,:], i + 1))
+function Base.iterate(it::mytbl, (el, i)=(nothing, 1))
+    if i > length(it); return nothing; end
+    return (it.source[i,:], (nothing, i + 1))
 end
 
 

@@ -45,8 +45,8 @@ TABLE_CAST = """id,height,age,name,occupation
         t = Table(IOBuffer(TABLE_CAST), s)
         tr = TableSchema.read(t)
         @test TableSchema.is_valid(t.schema)
-        @test typeof(tr[1,1]) == String
-        @test typeof(tr[2,1]) == Float64
+        @test isa(tr[1,1], String)
+        @test isa(tr[1,2], Float64)
     end
 
     @testset "Remote data and schema reading" begin

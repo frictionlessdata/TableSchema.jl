@@ -52,7 +52,7 @@ end
 function fetch_json(filename::String)
     if match(r"^https?://", filename) !== nothing
         req = request("GET", filename)
-        JSON.parse(req.body)
+        JSON.parse(String(req.body))
     else
         JSON.parsefile(filename)
     end

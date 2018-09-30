@@ -8,7 +8,7 @@ TABLE_MIN = """id,height,age,name,occupation
 
 TABLE_WEIRD = """
 a_dict,an_array,a_geopoint,a_date,a_time
-{"test":3},"[1\,2\,3]","45.2\,26.1","2014-06-15","02:00:00"
+{"test":3},"[1,2,3]","45.2,26.1","2014-06-15","02:00:00"
 """
 
 @testset "Inference of a Schema from a table" begin
