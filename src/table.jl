@@ -73,8 +73,12 @@ function read(t::Table ; data=nothing, keyed=false, extended=false, cast=true, r
     end
     t.source
 end
-function infer(t::Table, limit=100::Int16)
-    t.schema && t.schema.descriptor || throw(ErrorException("Not implemented"))
+function infer(t::Table ; limit::Int64=-1)
+	# what
+	limit !== -1 && throw(ErrorException("limit parameter not implemented"))
+	tr = read(t, cast=false)
+	t.schema = Schema()
+	infer(t.schema, tr, t.headers)
 end
 function save(t::Table, target::String)
     throw(ErrorException("Not implemented"))

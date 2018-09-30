@@ -25,6 +25,12 @@ a_dict,an_array,a_geopoint,a_date,a_time
         @test s.fields[5].typed == "string" # TODO: date
     end
 
+    @testset "Inline with minimal schema" begin
+        t = Table(IOBuffer(TABLE_MIN))
+        TableSchema.infer(t)
+        @test t.schema.fields[1].typed == "integer"
+    end
+
     @testset "From a weird Table" begin
         t = Table(IOBuffer(TABLE_WEIRD))
         tr = TableSchema.read(t, cast=false)
