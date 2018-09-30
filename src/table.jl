@@ -33,7 +33,7 @@ end
 
 function read_remote_csv(url::String)
     req = request("GET", url)
-    data = readdlm(req.body, ',')
+    readdlm(req.body, ',')
 end
 
 function get_headers(source::Array)
@@ -110,15 +110,12 @@ function validate(t::Table)
     return length(t.errors) == 0
 end
 
-Base.length(iter::Table) = size(iter.source, 1)
-Base.eltype(iter::Table) = Table
-function Base.iterate(iter::Table, state=(1, 0))
-    element, count = state
-    if count > size(iter.source, 1)
-        return nothing
-    end
-    return (element, (element.source[count,:], count + 1))
+Base.length(it::Table) = size(it.source, 1)
+Base.eltype(it::Table) = Table
+function Base.iterate(it::Table, (el, i)=(it.source[1,:], 1))
+	return i >= length(it) ? nothing : (el, (it.source[i + 1,:], i + 1))
 end
+
 # Base.start(t::Table) = 1
 # Base.done(t::Table, i) = i > size(t.source, 1)
 # Base.next(t::Table, i) = t.source[i,:], i+1
