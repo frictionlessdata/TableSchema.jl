@@ -5,7 +5,7 @@
 [![SemVer](https://img.shields.io/badge/versions-SemVer-brightgreen.svg)](http://semver.org/)
 [![Gitter](https://img.shields.io/gitter/room/frictionlessdata/chat.svg)](https://gitter.im/frictionlessdata/chat)
 
-[![Julia Pkg](http://pkg.julialang.org/badges/JSON_0.6.svg)](http://pkg.julialang.org/?pkg=tableschema&ver=0.6)
+[![Julia Pkg](http://pkg.julialang.org/badges/JSON_1.0.svg)](http://pkg.julialang.org/?pkg=tableschema&ver=1.0)
 
 A library for working with [Table Schema](http://specs.frictionlessdata.io/table-schema/) in Julia:
 
@@ -86,19 +86,25 @@ The package use semantic versioning, meaning that major versions could include b
 v"1.0-" <= TableSchema < v"2.0-"
 ```
 
-At the Julia REPL, install the package as usual with:
+At the Julia REPL, install the package with:
 
-```Julia
-Pkg.add("TableSchema")
-```
-
-Code examples here require Julia 0.6+.
+`(v1.0) pkg> add "https://github.com/loleg/TableSchema.jl"`
 
 ## Development
 
-Clone this repository, then see the *test* folder for test sources and mock data.
+Code examples here require Julia 0.7, as we are now migrating to Julia 1.0. See [Pkg documentation](https://docs.julialang.org/en/v1.0.0/stdlib/Pkg/#Creating-your-own-packages-1) for further information.
 
-From your console, you can run the unit tests with:
+Clone this repository, enter the REPL (press `]` at the Julia prompt) to activate and test it using:
+
+```
+cd <path-to-my-folder>/TableSchema.jl
+julia
+# Press ]
+(v1.0) pkg> activate .
+(TableSchema) pkg> test
+```
+
+From your console, you can also run the unit tests with:
 
 `julia -L src/TableSchema.jl test/runtests.jl`
 

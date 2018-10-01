@@ -16,10 +16,14 @@ using Base.Iterators: filter
 using Base.Iterators: Repeated, repeated
 
 using JSON
-import HTTP: request
+using Dates
 
-DEFAULT_TYPE = "string"
-DEFAULT_FORMAT = "default"
+import HTTP: request
+import DelimitedFiles: readdlm, writedlm
+
+const DEFAULT_TYPE = "string"
+const DEFAULT_FORMAT = "default"
+const MAX_ROWS_INFER = 100
 
 include("constraints.jl")
 include("field.jl")

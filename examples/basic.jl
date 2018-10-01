@@ -4,6 +4,8 @@ using TableSchema
 # Either import the functions, or use TableSchema.read(<Table>) in the code
 import TableSchema: read, is_valid, validate
 
+import DelimitedFiles: readdlm
+
 t = Table()
 
 s = Schema("../data/schema_invalid_empty.json")
@@ -13,7 +15,7 @@ s = Schema("../data/schema_valid_missing.json")
 if is_valid(s); println("A valid Schema is ready"); end
 
 t.schema = s
-source = readcsv("../data/data_types.csv")
+source = readdlm("../data/data_types.csv", ',')
 tr = read(t, data=source) # 5x5 Array{Any,2}
 println( "The length is ", length(tr[:,1]) ) # 5
 println( "Sum of column 2 is ", sum([ row for row in tr[2] ]) ) # 51.0

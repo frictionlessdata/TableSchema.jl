@@ -2,7 +2,6 @@
 Table Schema generic data structure
 https://github.com/frictionlessdata/tableschema-jl#table
 """
-
 mutable struct Table
     source
     headers::Array{String}
@@ -13,13 +12,13 @@ mutable struct Table
         if match(r"^https?://", csvfilename) !== nothing
             source = read_remote_csv(csvfilename)
         else
-            source = readcsv(csvfilename)
+            source = readdlm(csvfilename, ',')
         end
         headers, source = get_headers(source)
         new(source, headers, schema, [])
     end
-    function Table(csvdata::Base.AbstractIOBuffer, schema::Schema=Schema())
-        source = readcsv(csvdata)
+    function Table(csvdata::Base.GenericIOBuffer, schema::Schema=Schema())
+        source = readdlm(csvdata, ',')
         headers, source = get_headers(source)
         new(source, headers, schema, [])
     end
@@ -27,19 +26,18 @@ mutable struct Table
         new(source, headers, schema, [])
     end
     function Table()
-        new(Void, [], Schema(), [])
+        new(Nothing, [], Schema(), [])
     end
 end
 
 function read_remote_csv(url::String)
     req = request("GET", url)
-    data = readcsv(req.body)
+    readdlm(req.body, ',')
 end
 
 function get_headers(source::Array)
     headers = [ String(s) for s in source[1,:] ]
-    source = source[2:end,:] # clear the headers
-    headers, source
+    headers, source[2:end,:] # clear the headers
 end
 
 function read(t::Table ; data=nothing, keyed=false, extended=false, cast=true, relations=false, limit=nothing)
@@ -55,26 +53,47 @@ function read(t::Table ; data=nothing, keyed=false, extended=false, cast=true, r
         if !is_valid(t.schema)
             throw(ErrorException("Schema must be valid to cast Table"))
         end
-        newtable = Void
+        if t.source == nothing
+            throw(ErrorException("Data must be available to cast Table"))
+        end
+        newtable = Nothing
+		# Iterate table rows
         for row in t
+			# Apply cast to the row's values
             newrow = cast_row(t.schema, row, false, false)
-            if newtable == Void
+			# Reshape back into a non-elemental array
+			newrow = reshape(newrow, 1, length(newrow))
+            if newtable == Nothing
                 newtable = newrow
             else
-                vcat(newtable, newrow)
+                newtable = vcat(newtable, newrow)
             end
         end
-        # println(t.source, typeof(t.source))
         t.source = newtable
-        # println(t.source, typeof(t.source))
     end
     t.source
 end
-function infer(t::Table, limit=100::Int16)
-    t.schema && t.schema.descriptor || throw(ErrorException("Not implemented"))
+
+function infer(t::Table ; limit::Int64=-1)
+	# what
+	limit !== -1 && throw(ErrorException("limit parameter not implemented"))
+	tr = read(t, cast=false)
+	t.schema = Schema()
+	infer(t.schema, tr, t.headers)
 end
+
 function save(t::Table, target::String)
-    throw(ErrorException("Not implemented"))
+	# TODO: should we check the schema too?
+	# !valid(t.schema) &&
+    #     throw(TableValidationException("Schema not valid"))
+	@debug "Building table data"
+	headers = reshape(t.headers, 1, length(t.headers))
+	tabledata = vcat(headers, t.source)
+	@debug "Saving table data to $target"
+	delim = ','
+	open(target, "w") do io
+		writedlm(io, tabledata, delim)
+	end
 end
 
 function validate(t::Table)
@@ -85,7 +104,7 @@ function validate(t::Table)
     #     throw(TableValidationException("Schema not valid"))
     tr = t.source
     for fld in t.schema.fields
-        ix = findin(t.headers, [fld.name])
+        ix = findall(in([fld.name]), t.headers)
         if length(ix) != 1
             # TODO: shouldn't this just cause a ConstraintError?
             throw(TableValidationException(string("Missing field defined in Schema: ", fld.name)))
@@ -110,7 +129,13 @@ function validate(t::Table)
     return length(t.errors) == 0
 end
 
-Base.length(t::Table) = size(t.source, 1)
-Base.start(t::Table) = 1
-Base.done(t::Table, i) = i > size(t.source, 1)
-Base.next(t::Table, i) = t.source[i,:], i+1
+Base.eltype(it::Table) = Table
+Base.length(it::Table) = size(it.source, 1)
+function Base.iterate(it::Table, (el, i)=(nothing, 1))
+    if i > length(it); return nothing; end
+    return (it.source[i,:], (nothing, i + 1))
+end
+
+# Base.start(t::Table) = 1
+# Base.done(t::Table, i) = i > size(t.source, 1)
+# Base.next(t::Table, i) = t.source[i,:], i+1

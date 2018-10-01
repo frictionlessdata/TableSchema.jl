@@ -1,8 +1,8 @@
 include("../src/TableSchema.jl")
 using TableSchema
 
-# You may need to julia> Pkg.add("HTTP")
 import HTTP: request
+import DelimitedFiles: readdlm
 
 # Either import the functions, or use TableSchema.read(<Table>) in the code
 import TableSchema: read, is_valid, validate
@@ -12,7 +12,7 @@ REMOTE_URL = "https://raw.githubusercontent.com/frictionlessdata/tableschema-jl/
 println( "Fetching remote data ..." )
 t = Table()
 req = request("GET", REMOTE_URL)
-data = readcsv(req.body)
+data = readdlm(req.body, ',')
 tr = read(t, data=data, cast=false) # Array{Any,2}
 
 column1 = tr[:,1]
