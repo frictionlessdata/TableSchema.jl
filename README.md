@@ -78,7 +78,7 @@ add_field(schema, field)
 
 ## Installation
 
-:construction: Work In Progress. The following documentation is relevant only after package release. In the interim, please see [datapackage-jl](https://github.com/frictionlessdata/datapackage-jl)
+:construction: Work In Progress. The following documentation is relevant only after package release. In the interim, please see [DataPackage.jl](https://github.com/frictionlessdata/DataPackage.jl)
 
 The package use semantic versioning, meaning that major versions could include breaking changes. It is highly recommended to specify a version range in your `REQUIRE` file e.g.:
 
