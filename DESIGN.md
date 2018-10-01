@@ -11,20 +11,23 @@ This design document focuses on functional specification and design of two code 
 
 ## Functional Specification
 
-Each library needs to implement a set of core “actions” that are further described in the implementation [documentation](https://github.com/frictionlessdata/implementations#tableschema). For simplicity, these core actions are reproduced here:
+Each library needs to implement a set of core “actions” that are further described in the implementation [documentation](https://github.com/frictionlessdata/implementations#tableschema). For simplicity, these core actions are reproduced here, along with links to the corresponding unit test cases:
 
 **Table Schema**
 
-- read and validate a table schema descriptor
-- create/edit a table schema descriptor
-- provide a model-type interface to interact with a descriptor
-- infer a Table Schema descriptor from a supplied sample of data
-- validate a data source against the Table Schema descriptor, including in response to editing the descriptor
-- enable streaming and reading of a data source through a Table Schema (cast on iteration)
+- read and validate a table schema descriptor [schema.jl](test/schema.jl#L27)
+- create/edit a table schema descriptor [schema.jl](test/schema.jl#L27)
+- provide a model-type interface to interact with a descriptor [schema.jl](test/schema.jl#L27)
+- infer a Table Schema descriptor from a supplied sample of data [infer.jl](test/infer.jl#L14)
+- validate a data source against the Table Schema descriptor [validate.jl](test/validate.jl#L3)
+- validate in response to editing the descriptor [changes.jl](test/changes.jl#L18)
+- enable streaming and reading of a data source through a Table Schema [read.jl](test/read.jl#L7)
+- reading of a data source with cast on iteration [schema.jl](test/schema.jl#L64)
+- saving of a descriptor to disk [save.jl](test/save.jl#L9)
 
 **Data Package**
 
-- read an existing Data Package descriptor
+- read an existing Data Package descriptor [read.jl](https://github.com/frictionlessdata/DataPackage.jl/blob/master/test/read.jl)
 - validate an existing Data Package descriptor, including profile-specific validation via the registry of JSON Schemas
 - create a new Data Package descriptor
 - edit an existing Data Package descriptor
