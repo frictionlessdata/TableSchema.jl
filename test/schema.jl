@@ -1,30 +1,9 @@
-DESCRIPTOR_MIN = Dict("fields" => [
-    Dict( "name" => "id" ),
-    Dict( "name" => "height", "type" => "integer" )
-])
-
-DESCRIPTOR_MAX = Dict(
-    "fields" => [
-        Dict( "name" => "id", "type" => "string",
-            "constraints" => Dict( "required" => true )
-        ),
-        Dict( "name" => "height", "type" => "number" ),
-        Dict( "name" => "age", "type" => "integer" ),
-        Dict( "name" => "name", "type" => "string" ),
-        Dict( "name" => "occupation", "type" => "string" )
-    ],
-    "primaryKey" => [ "id" ],
-    "foreignKeys" => [ Dict(
-        "fields" => [ "name" ],
-        "reference" => Dict(
-            "resource" => "",
-            "fields" => [ "id" ]
-        )
-    ) ],
-    "missingValues" => ["", "-", "null"]
-)
-
 @testset "Read a Table Schema descriptor" begin
+
+    DESCRIPTOR_MIN = Dict("fields" => [
+        Dict( "name" => "id" ),
+        Dict( "name" => "height", "type" => "integer" )
+    ])
 
     @testset "Minimal from dictionary" begin
         s = Schema(DESCRIPTOR_MIN)
@@ -63,6 +42,27 @@ end
 
 @testset "Field value casting" begin
     import TableSchema: cast_by_type, cast_value, cast_row, CastError
+
+    DESCRIPTOR_MAX = Dict(
+        "fields" => [
+            Dict( "name" => "id", "type" => "string",
+                "constraints" => Dict( "required" => true )
+            ),
+            Dict( "name" => "height", "type" => "number" ),
+            Dict( "name" => "age", "type" => "integer" ),
+            Dict( "name" => "name", "type" => "string" ),
+            Dict( "name" => "occupation", "type" => "string" )
+        ],
+        "primaryKey" => [ "id" ],
+        "foreignKeys" => [ Dict(
+            "fields" => [ "name" ],
+            "reference" => Dict(
+                "resource" => "",
+                "fields" => [ "id" ]
+            )
+        ) ],
+        "missingValues" => ["", "-", "null"]
+    )
 
     @testset "Cast functions" begin
         @test cast_by_type(Nothing, "any", "", Dict()) == Nothing
