@@ -1,10 +1,15 @@
 using TableSchema
-using Base.Test
+using Test
+using Dates
 
-import TableSchema: read, validate, infer, save
+import TableSchema: read, validate, infer, commit, save
 
-include("schema.jl")
+import DelimitedFiles: readdlm
+
 include("read.jl")
+include("schema.jl")
 include("validate.jl")
 include("infer.jl")
+include("edit.jl")
 include("save.jl")
+# include("changes.jl")

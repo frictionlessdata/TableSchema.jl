@@ -2,9 +2,6 @@
 Table Schema main type
 https://github.com/frictionlessdata/tableschema-jl#schema
 """
-
-const MAX_ROWS_INFER = 100
-
 mutable struct Schema
     errors::Array{SchemaError}
     descriptor::Dict
@@ -52,7 +49,7 @@ end
 function fetch_json(filename::String)
     if match(r"^https?://", filename) !== nothing
         req = request("GET", filename)
-        JSON.parse(req.body)
+        JSON.parse(String(req.body))
     else
         JSON.parsefile(filename)
     end
@@ -86,8 +83,8 @@ function validate(s::Schema, strict::Bool=false)
         end
     end
     for e in s.errors
-        if contains(e.message, "primaryKey") && e.key != ""
-            deleteat!(s.primary_key, findin(s.primary_key, [e.key]))
+        if occursin(e.message, "primaryKey") && e.key != ""
+            deleteat!(s.primary_key, findall(in([e.key]), s.primary_key))
         end
     end
 
@@ -133,11 +130,13 @@ function validate(s::Schema, strict::Bool=false)
         end
         # Handle errors
         for e in s.errors
-            if contains(e.message, "foreignKeys fields") && e.key != ""
-                deleteat!(key["fields"], findin(key["fields"], [e.key]))
+            if occursin(e.message, "foreignKeys fields") && e.key != ""
+                deleteat!(key["fields"],
+                    findall(in([e.key]), key["fields"]))
             end
-            if contains(e.message, "foreignKeys references") && e.key != ""
-                deleteat!(key["reference"]["fields"], findin(key["reference"]["fields"], [e.key]))
+            if occursin(e.message, "foreignKeys references") && e.key != ""
+                deleteat!(key["reference"]["fields"],
+                    findall(in([e.key]), key["reference"]["fields"]))
             end
         end
     end
@@ -161,28 +160,36 @@ function guess_type(value)
     elseif isa(value, AbstractString)
         try
             df = DateFormat("YYYY-MM-DDThh:mm:ssZ")
-            dd = DateTime(value, df)
+            dd = Date(value, df)
             return "datetime"
+        catch
+            # continue
         end
         try
             df = DateFormat("HH:MM:SS")
-            dd = DateTime(value, df)
+            dd = Date(value, df)
             return "time"
+        catch
+            # continue
         end
         try
             df = DateFormat("y-m-d")
             dd = Date(value, df)
             return "date"
+        catch
+            # continue
         end
         gp = split(value, ",")
         if length(gp) == 2
             try
-                lon = float(gp[1])
-                lat = float(gp[2])
+                lon = parse(Float64, gp[1])
+                lat = parse(Float64, gp[2])
                 if lon <= 180 && lon >= -180 &&
                     lat <= 90 && lat >= -90
                         return "geopoint"
                 end
+            catch
+                # continue
             end
         end
         try
@@ -192,6 +199,8 @@ function guess_type(value)
             elseif isa(obj, Dict)
                 return "object"
             end
+        catch
+            # continue
         end
         return "string"
     else
@@ -212,13 +221,13 @@ function infer(s::Schema, rows::Array{Any}, headers::Array{String}, maxrows=MAX_
         for (r, val) in enumerate(col[1:maxrows])
             guess = guess_type(val)
             if guess == nothing
-                @printf("Could not guess type at (%d, %d)\n", r, c)
+                @warn "Could not guess type at ($(r), $(c))"
             else
                 if !haskey(type_match, guess)
                     type_match[guess] = 0
                 end
                 type_match[guess] = type_match[guess] + 1
-                # @printf("Guessed %s at (%d, %d)\n", guess, r, c)
+                @debug "Guessed $(guess) at ($(r), $(c))"
             end
             # print(val)
             # print("\n")
@@ -291,16 +300,44 @@ function cast_row(s::Schema, row::Array, fail_fast=false, check_constraints=true
     result
 end
 
+function build(s::Schema)
+    d = Dict()
+    d["fields"] = [ build(f) for f in s.fields ]
+    d["primaryKey"] = s.primary_key
+    d["foreignKeys"] = s.foreign_keys
+    d["missingValues"] = s.missing_values
+    s.descriptor = d
+    d
+end
+
+function commit(s::Schema ; strict=nothing)
+    strict !== nothing &&
+        throw(ErrorException("strict parameter not implemented"))
+    @debug "Building schema descriptor"
+    s.descriptor = build(s)
+    s.errors = []
+    validate(s)
+    length(s.errors) > 0 &&
+        throw(ErrorException("Invalid schema: check errors"))
+    true
+end
+
+function save(s::Schema, target::String)
+    commit(s)
+	indent = 4
+	@debug "Saving table schema to $target"
+	open(target, "w") do io
+		JSON.print(io, s.descriptor, indent)
+	end
+end
+
 field_names(s::Schema) = [ f.descriptor.name for f in s.fields ]
 get_field(s::Schema, name::String) = [ f for f in s.fields if f.name == name ][1]
-get_field_index(s::Schema, name::String) = findin(s.fields, [get_field(s, name)])
+get_field_index(s::Schema, name::String) = findall(in([get_field(s, name)]), s.fields)
 has_field(s::Schema, name::String) = length([ true for f in s.fields if f.name == name ]) > 0
 add_field(s::Schema, d::Dict) = push!(s.fields, Field(d))
 add_field(s::Schema, f::Field) = push!(s.fields, f)
 remove_field(s::Schema, name::String) = deleteat!(s.fields, get_field_index(s, name))
-
-commit(s::Schema, strict=nothing) = throw(ErrorException("Not implemented"))
-save(s::Schema, target::String) = throw(ErrorException("Not implemented"))
 
 is_empty(s::Schema) = Base.isempty(s.fields)
 is_valid(s::Schema) = (!Base.isempty(s.descriptor) && length(s.errors) == 0)

@@ -2,23 +2,22 @@
 Table Schema validators
 https://github.com/frictionlessdata/tableschema-jl#validators
 """
-
 function checkrow(f::Field, val, column::Array=[])
     c::Constraints = f.constraints
 
     c.required && (val == "" || val == nothing) &&
         throw(ConstraintError("required", f, val))
 
-    c.unique && length(findin(column, [val])) > 1 &&
+    c.unique && length(findall(in([val]), column)) > 1 &&
         throw(ConstraintError("unique", f, val))
 
     if typeof(val) == String
 
-        !isnull(c.minLength) && c.minLength > -1 &&
+        c.minLength !== nothing && c.minLength > -1 &&
             length(val) < c.minLength &&
                 throw(ConstraintError("minLength", f, val, c.minLength))
 
-        !isnull(c.maxLength) && c.maxLength > -1 &&
+        c.maxLength !== nothing && c.maxLength > -1 &&
             length(val) > c.maxLength &&
                 throw(ConstraintError("maxLength", f, val, c.maxLength))
 
