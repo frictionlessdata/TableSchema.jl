@@ -121,11 +121,6 @@ function validate(t::Table)
             end
         end
     end
-    # foreach(r -> println(r.message,"-",r.value,"-",r.field.name), t.errors)
-    # message =
-    #     'Field "{field.name}" has constraint "{name}" '
-    #     'which is not satisfied for value "{value}"'
-    #     ).format(field=self, name=name, value=value))
     return length(t.errors) == 0
 end
 
