@@ -76,7 +76,8 @@ a_dict,an_array,a_geopoint,a_date,a_time
     end
 
     @testset "From a ISO-8859-7 file" begin
-        t = Table(joinpath(dirname(@__FILE__), "../data/data_infer_iso-8859-7.csv"))
+		encoding = enc"iso-8859-7"
+        t = Table(joinpath(dirname(@__FILE__), "../data/data_infer_iso-8859-7.csv"), encoding=encoding)
         tr = TableSchema.read(t, cast=false)
         s = Schema()
         TableSchema.infer(s, tr, t.headers)

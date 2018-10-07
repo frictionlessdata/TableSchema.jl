@@ -17,6 +17,7 @@ using Base.Iterators: Repeated, repeated
 
 using JSON
 using Dates
+using StringEncodings
 
 import HTTP: request
 import DelimitedFiles: readdlm, writedlm
@@ -24,6 +25,7 @@ import DelimitedFiles: readdlm, writedlm
 const DEFAULT_TYPE = "string"
 const DEFAULT_FORMAT = "default"
 const MAX_ROWS_INFER = 100
+const DELIMITER = ','
 
 include("constraints.jl")
 include("field.jl")
