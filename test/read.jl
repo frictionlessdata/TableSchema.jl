@@ -1,8 +1,8 @@
-TABLE_CAST = """id,height,age,name,occupation
+@testset "Read a Table from file" begin
+
+    TABLE_CAST = """id,height,age,name,occupation
 1.1,10,1,string1,2012
 """
-
-@testset "Read a Table from file" begin
 
     @testset "Basic data reading" begin
         t = Table(joinpath(dirname(@__FILE__), "../data/data_types.csv"))

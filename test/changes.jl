@@ -1,12 +1,12 @@
-TABLE_MIN = """id,height,age,name,occupation
+@testset "Updating and reloading schema and data" begin
+
+    const TABLE_MIN = """id,height,age,name,occupation
 1,10.0,1,string1,2012-06-15 00:00:00
 2,10.1,2,string2,2013-06-15 01:00:00
 3,10.2,3,string3,2014-06-15 02:00:00
 4,10.3,4,string4,2015-06-15 03:00:00
 5,10.4,5,string4,2016-06-15 04:00:00
 """
-
-@testset "Updating and reloading schema and data" begin
 
     tempfile_schema = tempname()
     @info "Saving changes to $tempfile_schema"
