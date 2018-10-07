@@ -1,4 +1,6 @@
-TABLE_MIN = """id,height,age,name,occupation
+@testset "Inference of a Schema from a table" begin
+
+    TABLE_MIN = """id,height,age,name,occupation
 1,10.0,1,string1,2012-06-15 00:00:00
 2,10.1,2,string2,2013-06-15 01:00:00
 3,10.2,3,string3,2014-06-15 02:00:00
@@ -6,12 +8,10 @@ TABLE_MIN = """id,height,age,name,occupation
 5,10.4,5,string5,2016-06-15 04:00:00
 """
 
-TABLE_WEIRD = """
+    TABLE_WEIRD = """
 a_dict,an_array,a_geopoint,a_date,a_time
 {"test":3},"[1,2,3]","45.2,26.1","2014-06-15","02:00:00"
 """
-
-@testset "Inference of a Schema from a table" begin
 
     @testset "A minimal Schema" begin
         t = Table(IOBuffer(TABLE_MIN))
@@ -44,7 +44,7 @@ a_dict,an_array,a_geopoint,a_date,a_time
     end
 
     @testset "One that does not meet constraints" begin
-        t = Table("../data/data_constraints.csv")
+        t = Table(joinpath(dirname(@__FILE__), "../data/data_constraints.csv"))
         tr = TableSchema.read(t, cast=false)
         s = Schema()
         TableSchema.infer(s, tr, t.headers)
@@ -56,7 +56,7 @@ a_dict,an_array,a_geopoint,a_date,a_time
     end
 
     @testset "From data in a basic file" begin
-        t = Table("../data/data_infer.csv")
+        t = Table(joinpath(dirname(@__FILE__), "../data/data_infer.csv"))
         tr = TableSchema.read(t, cast=false)
         s = Schema()
         TableSchema.infer(s, tr, t.headers)
@@ -66,7 +66,7 @@ a_dict,an_array,a_geopoint,a_date,a_time
     end
 
     @testset "From a UTF8 file" begin
-        t = Table("../data/data_infer_utf8.csv")
+        t = Table(joinpath(dirname(@__FILE__), "../data/data_infer_utf8.csv"))
         tr = TableSchema.read(t, cast=false)
         s = Schema()
         TableSchema.infer(s, tr, t.headers)
@@ -76,7 +76,7 @@ a_dict,an_array,a_geopoint,a_date,a_time
     end
 
     @testset "From a ISO-8859-7 file" begin
-        t = Table("../data/data_infer_iso-8859-7.csv")
+        t = Table(joinpath(dirname(@__FILE__), "../data/data_infer_iso-8859-7.csv"))
         tr = TableSchema.read(t, cast=false)
         s = Schema()
         TableSchema.infer(s, tr, t.headers)
@@ -86,7 +86,7 @@ a_dict,an_array,a_geopoint,a_date,a_time
     end
 
     @testset "From 'row limit' file" begin
-        t = Table("../data/data_infer_row_limit.csv")
+        t = Table(joinpath(dirname(@__FILE__), "../data/data_infer_row_limit.csv"))
         tr = TableSchema.read(t, cast=false)
         s = Schema()
         TableSchema.infer(s, tr, t.headers)

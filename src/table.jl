@@ -107,7 +107,7 @@ function validate(t::Table)
         ix = findall(in([fld.name]), t.headers)
         if length(ix) != 1
             # TODO: shouldn't this just cause a ConstraintError?
-            throw(TableValidationException(string("Missing field defined in Schema: ", fld.name)))
+            throw(TableValidationException("Missing field defined in Schema: $(fld.name)"))
         end
         try
             column = tr[:,ix]

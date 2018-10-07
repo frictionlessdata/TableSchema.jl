@@ -106,8 +106,6 @@ julia
 
 From your console, you can also run the unit tests with:
 
-`julia -L src/TableSchema.jl test/runtests.jl`
+`julia test/runtests.jl`
 
 You should see a test summary displayed.
-
-Alternatively, put `include("src/TableSchema.jl")` in your IDE's console before running `runtests.jl`.

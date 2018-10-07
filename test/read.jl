@@ -1,11 +1,11 @@
-TABLE_CAST = """id,height,age,name,occupation
+@testset "Read a Table from file" begin
+
+    TABLE_CAST = """id,height,age,name,occupation
 1.1,10,1,string1,2012
 """
 
-@testset "Read a Table from file" begin
-
     @testset "Basic data reading" begin
-        t = Table("../data/data_types.csv")
+        t = Table(joinpath(dirname(@__FILE__), "../data/data_types.csv"))
         trs = TableSchema.read(t, cast=false)
         # check the headers
         @test length(t.headers) == 5
@@ -23,24 +23,24 @@ TABLE_CAST = """id,height,age,name,occupation
 
     @testset "Passing an IO buffered file" begin
         t = Table()
-        t.schema = Schema("../data/schema_valid_missing.json")
+        t.schema = Schema(joinpath(dirname(@__FILE__), "../data/schema_valid_missing.json"))
         @test TableSchema.is_valid(t.schema)
-        f = readdlm("../data/data_types.csv", ',')
+        f = readdlm(joinpath(dirname(@__FILE__), "../data/data_types.csv"), ',')
         tr = TableSchema.read(t, data=f)
         @test validate(t)
     end
 
     @testset "With schema validation" begin
-        s = Schema("../data/schema_valid_missing.json")
-        t = Table("../data/data_types.csv", s)
+        s = Schema(joinpath(dirname(@__FILE__), "../data/schema_valid_missing.json"))
+        t = Table(joinpath(dirname(@__FILE__), "../data/data_types.csv"), s)
         @test validate(t)
-        t2 = Table("../data/data_constraints.csv", s)
+        t2 = Table(joinpath(dirname(@__FILE__), "../data/data_constraints.csv"), s)
         @test !validate(t2)
         @test length(t2.errors) == 2
     end
 
     @testset "With row casting" begin
-        s = Schema("../data/schema_valid_missing.json")
+        s = Schema(joinpath(dirname(@__FILE__), "../data/schema_valid_missing.json"))
         t = Table(IOBuffer(TABLE_CAST), s)
         tr = TableSchema.read(t)
         @test TableSchema.is_valid(t.schema)

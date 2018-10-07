@@ -17,7 +17,7 @@
     end
 
     @testset "Modify primary and foreign keys" begin
-        s = Schema("../data/schema_valid_full.json")
+        s = Schema(joinpath(dirname(@__FILE__), "../data/schema_valid_full.json"))
         @test length(s.primary_key) == 4
         @test_throws SchemaError TableSchema.set_primary_key(s, "invalid")
         TableSchema.set_primary_key(s, "home_location")
@@ -30,7 +30,7 @@
     end
 
     @testset "Validate changes to the descriptor" begin
-        s = Schema("../data/schema_valid_full.json")
+        s = Schema(joinpath(dirname(@__FILE__), "../data/schema_valid_full.json"))
         validate(s, true)
         @test TableSchema.is_valid(s)
         TableSchema.remove_field(s, "position_title")
