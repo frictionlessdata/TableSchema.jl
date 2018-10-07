@@ -1,6 +1,7 @@
 using TableSchema
 using Test
 using Dates
+using StringEncodings
 
 import TableSchema: read, validate, infer, commit, save
 

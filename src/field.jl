@@ -1,6 +1,6 @@
 """
 Table Schema field
-https://github.com/frictionlessdata/tableschema-jl#field
+https://github.com/frictionlessdata/TableSchema.jl#field
 """
 mutable struct Field
     descriptor::Dict

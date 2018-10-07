@@ -1,6 +1,6 @@
 """
 Table Schema validators
-https://github.com/frictionlessdata/tableschema-jl#validators
+https://github.com/frictionlessdata/TableSchema.jl#validators
 """
 function checkrow(f::Field, val, column::Array=[])
     c::Constraints = f.constraints

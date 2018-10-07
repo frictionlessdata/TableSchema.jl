@@ -49,13 +49,13 @@
     end
 
     @testset "Remote data and schema reading" begin
-        t = Table("https://raw.githubusercontent.com/frictionlessdata/tableschema-jl/master/data/data_types.csv")
+        t = Table("https://raw.githubusercontent.com/frictionlessdata/TableSchema.jl/master/data/data_types.csv")
         trs = TableSchema.read(t, cast=false)
         # check the headers
         @test length(t.headers) == 5
         @test t.headers[2] == "height"
         # validate from remote schema
-        t.schema = Schema("https://raw.githubusercontent.com/frictionlessdata/tableschema-jl/master/data/schema_valid_missing.json")
+        t.schema = Schema("https://raw.githubusercontent.com/frictionlessdata/TableSchema.jl/master/data/schema_valid_missing.json")
         @test validate(t)
     end
 

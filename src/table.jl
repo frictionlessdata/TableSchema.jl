@@ -1,6 +1,6 @@
 """
 Table Schema generic data structure
-https://github.com/frictionlessdata/tableschema-jl#table
+https://github.com/frictionlessdata/TableSchema.jl#table
 """
 mutable struct Table
     source
@@ -8,17 +8,23 @@ mutable struct Table
     schema::Schema
     errors::Array{ConstraintError}
 
-    function Table(csvfilename::String, schema::Schema=Schema())
+    function Table(csvfilename::String, schema::Schema=Schema() ; encoding::Encoding=enc"UTF-8")
         if match(r"^https?://", csvfilename) !== nothing
             source = read_remote_csv(csvfilename)
         else
-            source = readdlm(csvfilename, ',')
+			if encoding === enc"UTF-8"
+				source = readdlm(csvfilename, DELIMITER)
+			else
+				io = StringEncodings.open(csvfilename, encoding)
+				source = readdlm(io, DELIMITER)
+				close(io)
+			end
         end
         headers, source = get_headers(source)
         new(source, headers, schema, [])
     end
     function Table(csvdata::Base.GenericIOBuffer, schema::Schema=Schema())
-        source = readdlm(csvdata, ',')
+        source = readdlm(csvdata, DELIMITER)
         headers, source = get_headers(source)
         new(source, headers, schema, [])
     end
@@ -32,7 +38,7 @@ end
 
 function read_remote_csv(url::String)
     req = request("GET", url)
-    readdlm(req.body, ',')
+    readdlm(req.body, DELIMITER)
 end
 
 function get_headers(source::Array)
@@ -121,11 +127,6 @@ function validate(t::Table)
             end
         end
     end
-    # foreach(r -> println(r.message,"-",r.value,"-",r.field.name), t.errors)
-    # message =
-    #     'Field "{field.name}" has constraint "{name}" '
-    #     'which is not satisfied for value "{value}"'
-    #     ).format(field=self, name=name, value=value))
     return length(t.errors) == 0
 end
 
