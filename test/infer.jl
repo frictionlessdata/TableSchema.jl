@@ -44,7 +44,7 @@ a_dict,an_array,a_geopoint,a_date,a_time
     end
 
     @testset "One that does not meet constraints" begin
-        t = Table("../data/data_constraints.csv")
+        t = Table(joinpath(dirname(@__FILE__), "../data/data_constraints.csv"))
         tr = TableSchema.read(t, cast=false)
         s = Schema()
         TableSchema.infer(s, tr, t.headers)
@@ -56,7 +56,7 @@ a_dict,an_array,a_geopoint,a_date,a_time
     end
 
     @testset "From data in a basic file" begin
-        t = Table("../data/data_infer.csv")
+        t = Table(joinpath(dirname(@__FILE__), "../data/data_infer.csv"))
         tr = TableSchema.read(t, cast=false)
         s = Schema()
         TableSchema.infer(s, tr, t.headers)
@@ -66,7 +66,7 @@ a_dict,an_array,a_geopoint,a_date,a_time
     end
 
     @testset "From a UTF8 file" begin
-        t = Table("../data/data_infer_utf8.csv")
+        t = Table(joinpath(dirname(@__FILE__), "../data/data_infer_utf8.csv"))
         tr = TableSchema.read(t, cast=false)
         s = Schema()
         TableSchema.infer(s, tr, t.headers)
@@ -76,7 +76,7 @@ a_dict,an_array,a_geopoint,a_date,a_time
     end
 
     @testset "From a ISO-8859-7 file" begin
-        t = Table("../data/data_infer_iso-8859-7.csv")
+        t = Table(joinpath(dirname(@__FILE__), "../data/data_infer_iso-8859-7.csv"))
         tr = TableSchema.read(t, cast=false)
         s = Schema()
         TableSchema.infer(s, tr, t.headers)
@@ -86,7 +86,7 @@ a_dict,an_array,a_geopoint,a_date,a_time
     end
 
     @testset "From 'row limit' file" begin
-        t = Table("../data/data_infer_row_limit.csv")
+        t = Table(joinpath(dirname(@__FILE__), "../data/data_infer_row_limit.csv"))
         tr = TableSchema.read(t, cast=false)
         s = Schema()
         TableSchema.infer(s, tr, t.headers)
