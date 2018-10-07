@@ -1,6 +1,6 @@
 """
 Common exceptions
-https://github.com/frictionlessdata/tableschema-jl#exceptions
+https://github.com/frictionlessdata/TableSchema.jl#exceptions
 """
 struct ConstraintError <: Exception
     message::String

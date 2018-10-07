@@ -1,6 +1,6 @@
 """
 Table Schema field constraints
-https://github.com/frictionlessdata/tableschema-jl#constraints
+https://github.com/frictionlessdata/TableSchema.jl#constraints
 """
 mutable struct Constraints
     required::Bool

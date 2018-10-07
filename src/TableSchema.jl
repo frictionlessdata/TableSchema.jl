@@ -1,6 +1,6 @@
 """
 TableSchema module
-https://github.com/frictionlessdata/tableschema-jl
+https://github.com/frictionlessdata/TableSchema.jl
 """
 module TableSchema
 

@@ -1,6 +1,6 @@
 """
 Table Schema main type
-https://github.com/frictionlessdata/tableschema-jl#schema
+https://github.com/frictionlessdata/TableSchema.jl#schema
 """
 mutable struct Schema
     errors::Array{SchemaError}

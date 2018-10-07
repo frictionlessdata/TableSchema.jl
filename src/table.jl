@@ -1,6 +1,6 @@
 """
 Table Schema generic data structure
-https://github.com/frictionlessdata/tableschema-jl#table
+https://github.com/frictionlessdata/TableSchema.jl#table
 """
 mutable struct Table
     source

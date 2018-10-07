@@ -1,7 +1,7 @@
 # TableSchema.jl
 
-[![Travis](https://travis-ci.org/frictionlessdata/tableschema-jl.svg?branch=master)](https://travis-ci.org/frictionlessdata/tableschema-jl)
-[![Coveralls](http://img.shields.io/coveralls/frictionlessdata/tableschema-jl.svg?branch=master)](https://coveralls.io/r/frictionlessdata/tableschema-jl?branch=master)
+[![Travis](https://travis-ci.org/frictionlessdata/TableSchema.jl.svg?branch=master)](https://travis-ci.org/frictionlessdata/TableSchema.jl)
+[![Coveralls](http://img.shields.io/coveralls/frictionlessdata/TableSchema.jl.svg?branch=master)](https://coveralls.io/r/frictionlessdata/TableSchema.jl?branch=master)
 [![SemVer](https://img.shields.io/badge/versions-SemVer-brightgreen.svg)](http://semver.org/)
 [![Gitter](https://img.shields.io/gitter/room/frictionlessdata/chat.svg)](https://gitter.im/frictionlessdata/chat)
 
@@ -21,11 +21,11 @@ A library for working with [Table Schema](http://specs.frictionlessdata.io/table
 
 ### Status
 
-:construction: This package is pre-release and under heavy development. Please see [DESIGN.md](DESIGN.md) for a detailed overview of our goals, and visit the [issues page](https://github.com/frictionlessdata/tableschema-jl/issues) to contribute and make suggestions. For questions that need to a real time response, reach out via [Gitter](https://gitter.im/frictionlessdata/chat). Thanks! :construction:
+:construction: This package is pre-release and under heavy development. Please see [DESIGN.md](DESIGN.md) for a detailed overview of our goals, and visit the [issues page](https://github.com/frictionlessdata/TableSchema.jl/issues) to contribute and make suggestions. For questions that need to a real time response, reach out via [Gitter](https://gitter.im/frictionlessdata/chat). Thanks! :construction:
 
 We aim to make this library compatible with all widely used approaches to work with tabular data in Julia.
 
-Please visit [our wiki](https://github.com/frictionlessdata/datapackage-jl/wiki) for a list of related projects that we are tracking, and contibute use cases there or as enhancement [issues](https://github.com/frictionlessdata/tableschema-jl/issues).
+Please visit [our wiki](https://github.com/frictionlessdata/DataPackage.jl/wiki) for a list of related projects that we are tracking, and contibute use cases there or as enhancement [issues](https://github.com/frictionlessdata/TableSchema.jl/issues).
 
 # Usage
 
@@ -83,7 +83,7 @@ add_field(schema, field)
 The package use semantic versioning, meaning that major versions could include breaking changes. It is highly recommended to specify a version range in your `REQUIRE` file e.g.:
 
 ```
-v"1.0-" <= TableSchema < v"2.0-"
+v"0.0-" <= TableSchema < v"2.0-"
 ```
 
 At the Julia REPL, install the package with:
@@ -92,7 +92,7 @@ At the Julia REPL, install the package with:
 
 ## Development
 
-Code examples here require Julia 0.7, as we are now migrating to Julia 1.0. See [Pkg documentation](https://docs.julialang.org/en/v1.0.0/stdlib/Pkg/#Creating-your-own-packages-1) for further information.
+Code examples here require **Julia 0.7**, as we are now migrating to Julia 1.0. See [Pkg documentation](https://docs.julialang.org/en/v1.0.0/stdlib/Pkg/#Creating-your-own-packages-1) for further information.
 
 Clone this repository, enter the REPL (press `]` at the Julia prompt) to activate and test it using:
 
@@ -104,7 +104,11 @@ julia
 (TableSchema) pkg> test
 ```
 
-From your console, you can also run the unit tests with:
+Or you can install the package locally using
+
+`(v1.0) pkg> add .`
+
+From your console, you can then run the unit tests with:
 
 `julia test/runtests.jl`
 
