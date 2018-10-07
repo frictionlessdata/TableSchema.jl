@@ -83,7 +83,7 @@ add_field(schema, field)
 The package use semantic versioning, meaning that major versions could include breaking changes. It is highly recommended to specify a version range in your `REQUIRE` file e.g.:
 
 ```
-v"0.0-" <= TableSchema < v"2.0-"
+v"0.0.1-" <= TableSchema < v"1.0.0-"
 ```
 
 At the Julia REPL, install the package with:
@@ -104,12 +104,13 @@ julia
 (TableSchema) pkg> test
 ```
 
-Or you can install the package locally using
+You can also install the package locally and run unit tests from the console:
 
-`(v1.0) pkg> add .`
+```
+(v1.0) pkg> add .
+julia test/runtests.jl
+```
 
-From your console, you can then run the unit tests with:
+A new feature of Julia's package manager is the **dev** command. To get a copy of this package installed into your `~/.julia` folder and updated with every change, use:
 
-`julia test/runtests.jl`
-
-You should see a test summary displayed.
+`(v1.0) pkg> dev TableSchema`
