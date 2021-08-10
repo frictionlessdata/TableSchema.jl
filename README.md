@@ -3,9 +3,9 @@
 [![Travis](https://travis-ci.org/frictionlessdata/TableSchema.jl.svg?branch=master)](https://travis-ci.org/frictionlessdata/TableSchema.jl)
 [![Coveralls](http://img.shields.io/coveralls/frictionlessdata/TableSchema.jl.svg?branch=master)](https://coveralls.io/r/frictionlessdata/TableSchema.jl?branch=master)
 [![SemVer](https://img.shields.io/badge/versions-SemVer-brightgreen.svg)](http://semver.org/)
-[![Gitter](https://img.shields.io/gitter/room/frictionlessdata/chat.svg)](https://gitter.im/frictionlessdata/chat)
-
-[![Julia Pkg](http://pkg.julialang.org/badges/JSON_1.0.svg)](http://pkg.julialang.org/?pkg=tableschema&ver=1.0)
+[![Release](http://pkg.julialang.org/badges/JSON_1.0.svg)](http://pkg.julialang.org/?pkg=tableschema&ver=1.0)
+[![Codebase](https://img.shields.io/badge/codebase-github-brightgreen)](https://github.com/frictionlessdata/tableschema-jl)
+[![Support](https://img.shields.io/badge/support-discord-brightgreen)](https://discordapp.com/invite/Sewv6av)
 
 A library for working with [Table Schema](http://specs.frictionlessdata.io/table-schema/) in Julia:
 
